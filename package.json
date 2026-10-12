@@ -1,0 +1,13 @@
+{
+  "name": "skill-deploy-share",
+  "version": "2.0.0",
+  "description": "Portable agent skills (SKILL.md) for Claude, Cursor, Copilot, Codex and Gemini CLI",
+  "type": "module",
+  "license": "MIT",
+  "bin": {
+    "skill-deploy-share": "install.mjs",
+    "github-vercel-deploy": "skills/github-vercel-deploy/scripts/deploy.mjs"
+  },
+  "engines": { "node": ">=18" },
+  "files": ["install.mjs", "skills/", "AGENTS.md", "README.md", "LICENSE"]
+}
