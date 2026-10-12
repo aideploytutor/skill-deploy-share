@@ -6,7 +6,7 @@
 
 ## 不会写代码？从这里开始
 
-你不需要看懂下面的内容。打开你平时用的 AI 编程工具（Claude、Cursor、Trae 等），把这句话发给它：
+你不需要看懂下面的内容。打开你平时用的 AI 编程工具（Claude Code、Cursor、VS Code Copilot 等），把这句话发给它：
 
 > 帮我安装 github.com/aideploytutor/skill-deploy-share 里的技能
 
