@@ -2,6 +2,7 @@
 
 This repository holds portable agent skills. Each skill lives in `skills/<name>/` and contains:
 - `SKILL.md`: when to use the skill and the steps to follow
+- `README.md`: human-facing usage notes
 - `scripts/`: helper scripts
 - `references/`: deeper docs
 
@@ -20,5 +21,6 @@ When a user request matches a skill's `description`:
 ## Adding a skill
 1. Copy `templates/SKILL.template.md` to `skills/<new-name>/SKILL.md`.
 2. Fill in the frontmatter (`name` must equal the folder name; `description` says when to use it).
-3. Add a row to the table above and to README.md.
-4. Keep scripts cross-platform. Prefer Node (`.mjs`) or Python over `.sh`/`.ps1`.
+3. Add a human-facing `skills/<new-name>/README.md`.
+4. Add a row to the table above and to the root README.md.
+5. Keep scripts cross-platform. Prefer Node (`.mjs`) or Python over `.sh`/`.ps1`.

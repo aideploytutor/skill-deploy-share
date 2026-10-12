@@ -9,5 +9,5 @@
     "github-vercel-deploy": "skills/github-vercel-deploy/scripts/deploy.mjs"
   },
   "engines": { "node": ">=18" },
-  "files": ["install.mjs", "skills/", "AGENTS.md", "README.md", "LICENSE"]
+  "files": ["install.mjs", "skills/", "templates/", "AGENTS.md", "README.md", "LICENSE"]
 }

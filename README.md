@@ -1,69 +1,95 @@
 # skill-deploy-share
 
-一个存放可复用 AI Agent 技能（skills）的仓库。每个技能都遵循开放的 **Agent Skills** 格式，即 `SKILL.md`、`scripts/` 和 `references/` 三部分。同一份文件可以用在：
+这里统一存放可复用的 AI Agent 技能（skills）。
 
-| 工具 | 安装位置（用户级） | 安装位置（项目级） |
+每个技能是一个独立文件夹，采用开放的 **Agent Skills** 格式（`SKILL.md` + 脚本 + 参考文档）。写一次，就能在不同的 AI 编程工具里使用，也能脱离 AI 直接当命令行工具运行。
+
+## 技能目录
+
+| 技能 | 作用 | 说明 |
+|---|---|---|
+| [github-vercel-deploy](skills/github-vercel-deploy/) | 把本地项目从零推到 GitHub，连接 Vercel，部署上线，之后每次 push 自动更新 | [使用说明](skills/github-vercel-deploy/README.md) |
+
+> 新增技能后，在上表加一行（`AGENTS.md` 里的表也要同步加）。
+
+## 支持的工具
+
+| 工具 | 用户级目录 | 项目级目录 |
 |---|---|---|
 | Claude Code / Claude 桌面版 | `~/.claude/skills/` | `.claude/skills/` |
 | Cursor | `~/.cursor/skills/` | `.cursor/skills/` |
 | VS Code + GitHub Copilot | `~/.copilot/skills/` | `.github/skills/` |
 | OpenAI Codex | `~/.agents/skills/` | `.agents/skills/` |
 | Gemini CLI | `~/.gemini/skills/` | `.gemini/skills/` |
-| 其他 Agent、自己写的软件、CI | 直接调用 `scripts/` 里的脚本 | 读取 `AGENTS.md` |
+| 其他 Agent / 自己的软件 / CI | 让 Agent 读 `AGENTS.md`，或直接运行技能里的 `scripts/` | |
 
-## 技能列表
-
-| 技能 | 作用 |
-|---|---|
-| [github-vercel-deploy](skills/github-vercel-deploy/SKILL.md) | 把本地项目从零推到 GitHub，连接 Vercel，部署上线，之后每次 push 自动更新 |
+如果某个工具的版本换了目录，改 `install.mjs` 开头的 `AGENTS` 配置即可。
 
 ## 安装
+
+需要 Node.js 18 或更高版本。
 
 ```bash
 git clone https://github.com/aideploytutor/skill-deploy-share
 cd skill-deploy-share
 
-node install.mjs                          # 所有技能装到所有工具（用户级）
-node install.mjs --agent claude,cursor    # 只装到指定工具
-node install.mjs --project ../my-app      # 装到某个项目里，跟着项目走
-node install.mjs --list                   # 查看技能和安装路径
+node install.mjs                               # 所有技能装到所有工具（用户级）
+node install.mjs --agent claude,cursor         # 只装到指定工具
+node install.mjs github-vercel-deploy          # 只装指定技能
+node install.mjs --project ../my-app           # 装进某个项目，提交后团队成员都能用
+node install.mjs --list                        # 列出技能和安装路径
 ```
 
-装好后重启 IDE 或新开一个对话，然后直接说"把这个项目部署到 GitHub 和 Vercel"就行。
+也可以用社区的通用安装器：`npx skills add aideploytutor/skill-deploy-share`。
 
-也可以用社区的通用安装器：`npx skills add aideploytutor/skill-deploy-share`。仓库是私有的话，需要先登录有权限的 GitHub 账号。
+更新技能：先运行 `git pull`，再重新运行 `node install.mjs`，会覆盖旧版本。
 
-## 不用 AI，直接当软件用
+## 使用
 
-`github-vercel-deploy` 的核心是一个独立的命令行工具，只依赖 git 和 Node.js 18 及以上版本，Windows、macOS、Linux 都能用：
+安装后重启 IDE，或者新开一个对话。然后直接用自然语言描述需求就行，不用记命令。Agent 会根据每个技能 `description` 里写的使用场景，自动选用对应的技能，比如"把这个项目部署到 GitHub 和 Vercel"。
 
-```bash
-# 令牌放在 .env.deploy（项目里或用户目录下），不会被提交到仓库
-#   GITHUB_TOKEN=...   https://github.com/settings/tokens/new?scopes=repo&description=skill-deploy
-#   VERCEL_TOKEN=...   https://vercel.com/account/tokens
+大多数技能的核心逻辑都放在 `scripts/` 里，不经过 AI 也能直接运行，具体用法见各技能自己的 README。
 
-node skills/github-vercel-deploy/scripts/deploy.mjs --dir ../my-app --check   # 只检查，不做改动
-node skills/github-vercel-deploy/scripts/deploy.mjs --dir ../my-app --yes     # 部署（默认私有仓库）
-node skills/github-vercel-deploy/scripts/deploy.mjs --dir ../my-app --yes --json   # 给程序调用，输出 JSON
+## 仓库结构
+
 ```
-
-退出码有固定含义（2 令牌、5 发现密钥、6 Vercel 看不到仓库、7 构建失败、10 需要确认），方便别的软件或 CI 判断结果。
-
-## v2 修复的问题（来自实测）
-
-| 第一版遇到的问题 | 现在的做法 |
-|---|---|
-| Windows 装完 `gh` 之后提示 "not recognized"（PATH 没刷新） | 不再需要 `gh` 和 `vercel` CLI，只用 git 加 Node 调 API |
-| `vercel login` 一直停在 "Waiting for authentication..." | 改用 `VERCEL_TOKEN`，脚本不会进入交互式登录 |
-| 需要双击 `.bat` 才能运行，不能在对话里完成 | Agent 直接运行脚本；遇到需要确认的地方返回退出码 10，由 Agent 在对话里问你 |
-| PowerShell 脚本里的中文显示成乱码 | 改用 Node 脚本，跨平台、没有编码问题 |
-| Vercel 绑定的 GitHub 账号（Dr-Banana）和仓库所有者（aideploytutor）不一致，Deploy 点了没反应 | 自动识别这个情况并给出修复步骤；文档把它列为第一项检查 |
-| 云端会话不能用 API 创建仓库 | 另外提供浏览器模式（`references/browser-mode.md`），已实测跑通 |
-| 令牌可能被写进 `.git/config` 或误提交 | 令牌通过环境变量传给 git；推送前扫描密钥，发现就停止 |
+skill-deploy-share/
+├── README.md              ← 本文件：总目录
+├── AGENTS.md              ← 给各种 Agent 读的通用说明和技能索引
+├── CLAUDE.md              ← 指向 AGENTS.md
+├── install.mjs            ← 跨平台安装器
+├── templates/
+│   └── SKILL.template.md  ← 新技能模板
+└── skills/
+    └── <技能名>/
+        ├── SKILL.md       ← 必需：何时用 + 步骤（Agent 读这个）
+        ├── README.md      ← 推荐：给人看的使用说明
+        ├── scripts/       ← 可选：可执行脚本
+        └── references/    ← 可选：排错、进阶文档（按需加载）
+```
 
 ## 添加新技能
 
-1. 复制 `templates/SKILL.template.md` 到 `skills/<新名字>/SKILL.md`。
-2. 填写 `name`（必须和文件夹名一致）和 `description`（写清楚什么时候用）。
-3. 在本文件和 `AGENTS.md` 的技能表里各加一行。
-4. 脚本优先用 Node（`.mjs`）或 Python，保证 Windows、macOS、Linux 都能用。
+1. **建文件夹**：`skills/<技能名>/`。名字只用小写字母、数字和短横线。
+2. **写 SKILL.md**：复制 `templates/SKILL.template.md` 改写。
+   - `name` 必须和文件夹名一致。
+   - `description` 是 Agent 判断用不用这个技能的唯一依据，要写清楚做什么，以及用户会怎么说（中英文触发词都写上）。
+   - 正文写步骤，控制在 500 行以内。细节放进 `references/`。
+3. **写脚本**（如果需要）：
+   - 优先用 Node（`.mjs`）或 Python，保证 Windows、macOS、Linux 都能运行，避免 `.sh`、`.ps1` 只能在单一平台用。
+   - 不弹交互式输入。需要确认时，用退出码或 `--yes` 参数交给 Agent 去问用户。
+   - 提供 `--help`；能给程序调用的，提供 `--json` 输出。
+4. **写 README.md**：给人看的说明，包括用途、前置条件、示例和已知问题。
+5. **登记**：在本文件和 `AGENTS.md` 的技能目录里各加一行。
+6. **测试**：用 `node install.mjs <技能名> --project <测试目录>` 装到一个测试项目里，在至少一个 Agent 里实际跑一遍。
+
+## 所有技能共同遵守的原则
+
+- **账号操作交给用户**：Agent 不输入密码、不注册账号、不处理验证码、不修改账号设置。遇到这些步骤，就请用户自己完成。
+- **密钥不进聊天、不进仓库**：令牌放环境变量或被 `.gitignore` 忽略的文件里；脚本在提交前要检查有没有泄露密钥。
+- **改动前先确认**：创建、发布、删除这类操作，先告诉用户要做什么，用户同意后再执行。
+- **可以重复运行**：已经完成的步骤要能自动跳过，失败后修复了直接重跑即可。
+
+## 许可证
+
+MIT。详见 [LICENSE](LICENSE)。
