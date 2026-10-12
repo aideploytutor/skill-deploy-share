@@ -18,6 +18,9 @@ When a user request matches a skill's `description`:
 |---|---|
 | [github-vercel-deploy](skills/github-vercel-deploy/SKILL.md) | The user wants a local project pushed to a new GitHub repo and deployed on Vercel with auto-deploy on push. Example phrasings: "部署到 GitHub 和 Vercel", "ship this to Vercel". |
 
+## Shared conventions
+Every skill must follow `STACK.md` (shared stack, table prefixes, env var names, requires/provides metadata). The full plan is in `ROADMAP.md`.
+
 ## Adding a skill
 1. Copy `templates/SKILL.template.md` to `skills/<new-name>/SKILL.md`.
 2. Fill in the frontmatter (`name` must equal the folder name; `description` says when to use it).
