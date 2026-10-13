@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+@theme {
+  --color-paper: #f6f3ee;
+  --color-ink: #17150f;
+  --color-muted: #6b665c;
+  --color-line: #e3ddd2;
+  --color-accent: #ff5a1f;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-paper: #15130f;
+    --color-ink: #f2eee6;
+    --color-muted: #a39d92;
+    --color-line: #2c2923;
+  }
+}
+
+html { color-scheme: light dark; }
+body { background: var(--color-paper); color: var(--color-ink); }

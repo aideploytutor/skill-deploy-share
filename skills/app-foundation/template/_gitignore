@@ -1,0 +1,15 @@
+node_modules/
+.next/
+out/
+.vercel
+.open-next/
+.wrangler/
+*.tsbuildinfo
+next-env.d.ts
+.DS_Store
+
+# secrets: never commit
+.env
+.env.*
+!.env.example
+.env.deploy
