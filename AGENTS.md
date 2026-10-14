@@ -18,6 +18,7 @@ When a user request matches a skill's `description`:
 |---|---|
 | [github-vercel-deploy](skills/github-vercel-deploy/SKILL.md) | The user wants a local project pushed to a new GitHub repo and deployed on Vercel with auto-deploy on push. Example phrasings: "部署到 GitHub 和 Vercel", "ship this to Vercel". |
 | [app-foundation](skills/app-foundation/SKILL.md) | The user wants to start a new website/app/shop/SaaS from scratch, or another skill requires `app-foundation`. Example phrasings: "搭一个产品底座", "新建一个项目". |
+| [db-connect](skills/db-connect/SKILL.md) | The user wants the site to save data / connect a database, or another skill requires `db-connect`. Example phrasings: "连上数据库", "让网站能存东西". |
 
 ## Shared conventions
 Every skill must follow `STACK.md` (shared stack, table prefixes, env var names, requires/provides metadata). The full plan is in `ROADMAP.md`.
