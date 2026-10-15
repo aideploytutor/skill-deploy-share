@@ -28,6 +28,7 @@
 | [github-vercel-deploy](skills/github-vercel-deploy/) | 把本地项目从零推到 GitHub，连接 Vercel，部署上线，之后每次 push 自动更新 | [使用说明](skills/github-vercel-deploy/README.md) |
 | [app-foundation](skills/app-foundation/) | 一句话搭好产品底座：网站框架 + 数据库接口 + 项目规则，后面所有系统都装在上面 | [使用说明](skills/app-foundation/README.md) |
 | [db-connect](skills/db-connect/) | 接上免费数据库（Neon，在 Vercel 后台创建），部署时自动建表，网站真正能存东西 | [使用说明](skills/db-connect/README.md) |
+| [domain-setup](skills/domain-setup/) | 把自己的域名或子域名绑到网站上，HTTPS 自动配好，附带检查脚本 | [使用说明](skills/domain-setup/README.md) |
 
 > 新增技能后，在上表加一行（`AGENTS.md` 里的表也要同步加）。
 

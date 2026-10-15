@@ -10,7 +10,7 @@
 | 001 | ✅ [github-vercel-deploy](skills/github-vercel-deploy/) | 一句话让 AI 把项目部署上线 | — |
 | 002 | ✅ [app-foundation](skills/app-foundation/) | 一句话搭好你的产品底座 | — |
 | 003 | ✅ [db-connect](skills/db-connect/) | 免费又不会被暂停的数据库 | app-foundation |
-| 004 | `domain-setup` | 绑定你自己的域名 | github-vercel-deploy |
+| 004 | ✅ [domain-setup](skills/domain-setup/) | 绑定你自己的域名 | github-vercel-deploy |
 | 005 | `email-send` | 让网站能发邮件 | domain-setup, app-foundation |
 | 006 | `auth-login` | Google 和邮箱验证码登录 | db-connect, email-send |
 | 007 | `env-secrets` | 密钥放对地方，永远不泄露 | — |
