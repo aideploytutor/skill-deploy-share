@@ -46,21 +46,25 @@ Safe to run twice. Adds `src/lib/email.ts` (`sendEmail()`), the `/email-test` pa
 
 1. resend.com → sign up. "Log in with Google" is the simplest. The owner accepts the terms.
 2. **Domains → Add domain** → the sending domain from step 1. Pick the region nearest the users (default is fine).
-3. Resend shows the records. Usually:
+3. Resend shows the records. In October 2026 a new domain got these (older accounts may see MX + SPF TXT on `send` instead):
 
 | Type | Host (Namecheap/GoDaddy style, root domain left off) | Value |
 |---|---|---|
-| TXT | `resend._domainkey.mail` | the long DKIM key (`p=...`) |
-| MX | `send.mail` | `feedback-smtp.<region>.amazonses.com`, priority 10 |
-| TXT | `send.mail` | `v=spf1 include:amazonses.com ~all` |
+| TXT | `resend._domainkey.mail` | the long DKIM key (`p=MIGf...`), **nothing else** |
+| CNAME | `send.mail` | `send.forge.rmta.net` |
+| CNAME | `rsend.mail` | `rsend.forge.rmta.net` |
 | TXT (recommended) | `_dmarc.mail` | `v=DMARC1; p=none;` |
 
-**Copy the values from Resend's page, not from this table.**
+**Copy the values from Resend's page, not from this table.** Two changes from what Resend shows:
+- Resend lists DMARC with Host `_dmarc`, which sets a policy for the **whole root domain**. Use `_dmarc.<sub>` (e.g. `_dmarc.mail`), which covers only the sending subdomain.
+- Skip the **Enable Receiving** MX record unless the site must receive mail. That record is the one that could clash with an existing mailbox.
+
+The page also offers "Go to <provider>". Some providers can add the records automatically. Treat that as the owner's choice and the owner's click.
 
 ### 4. Add the records at the DNS provider (owner's OK)
 
 - **Namecheap / GoDaddy / Aliyun:** the Host field already ends in the domain. Type only `resend._domainkey.mail`, not the full name, or it becomes `...labpencil.com.labpencil.com`. The check script detects this mistake (`doubled-host`).
-- **Namecheap:** MX records go in the same Advanced DNS list. If "Mail Settings" is set to something other than Custom MX, the MX row may be hidden. Set it to **Custom MX**. This only affects the root domain when the host is `@`. Ours is `send.mail`.
+- **Copy one value at a time.** In testing, the DKIM value got the next rows of the table pasted along with it. Resend stays Pending, and resolvers cache the wrong value for up to 30 min after it's fixed. The check script reports this as `dkim-garbled`. When you tell the owner what to paste, put **each value in its own code block**, not only in a table; copying from a table row is how it happened.
 - **Cloudflare:** grey cloud (DNS only) for everything. Proxied records break verification.
 - Don't touch existing MX/TXT records for the root domain. Those are their current mailbox.
 
@@ -72,7 +76,8 @@ node <skill-dir>/scripts/check.mjs --domain mail.example.com --wait 900
 
 | Code | Meaning |
 |---|---|
-| `dkim` / `spf` / `mx` | That record isn't visible yet, or the value is wrong |
+| `dkim` / `spf` / `rsend` / `mx` | That record isn't visible yet, or the value is wrong |
+| `dkim-garbled` | Extra text was pasted after the DKIM key; make the Value only `p=...` |
 | `doubled-host` | The full domain was typed into Host; keep only the part before it |
 | `dmarc` (○, recommended) | No DMARC yet. Add `v=DMARC1; p=none;` on `_dmarc.<sending domain>` |
 
