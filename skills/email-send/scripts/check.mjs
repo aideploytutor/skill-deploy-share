@@ -33,7 +33,7 @@ async function dns(name, type) {
   if (!r.ok) throw new Error(`DNS lookup failed (${r.status})`);
   const j = await r.json();
   return (j.Answer || []).filter((a) => a.type === TYPES[type]).map((a) =>
-    type === "TXT" ? a.data.replace(/^"|"$/g, "").replace(/"\s*"/g, "") : a.data.replace(/\.$/, ""));
+    type === "TXT" ? a.data.replace(/^"|"$/g, "").replace(/"\s*"/g, "").replace(/\\009/g, "\t") : a.data.replace(/\.$/, ""));
 }
 
 // "mail.example.com" → "example.com" (good enough for the doubled-host check)
@@ -49,8 +49,19 @@ async function once() {
   // DKIM — required
   const dkimName = `resend._domainkey.${d}`;
   const dkim = (await dns(dkimName, "TXT")).filter((t) => /p=/.test(t));
-  add("dkim", dkim.length > 0, `DKIM  TXT  ${dkimName}`, dkim.map((t) => t.slice(0, 40) + "…"),
-    "Add the DKIM TXT record from Resend → Domains → your domain. Copy the whole value.");
+  // A valid key is "p=" + base64 only. Extra text means something else got pasted in with it.
+  const validKey = (t) => {
+    const tags = t.split(";").map((x) => x.trim()).filter(Boolean);
+    return tags.every((x) => /^[a-z]+=\S*$/i.test(x)) && tags.some((x) => /^p=[A-Za-z0-9+/]{100,}=*$/.test(x));
+  };
+  const clean = dkim.filter(validKey);
+  if (dkim.length && !clean.length) {
+    add("dkim-garbled", false, `DKIM  TXT  ${dkimName}`, dkim.map((t) => (t.length > 70 ? `${t.slice(0, 30)}…${t.slice(-36)}` : t)),
+      "The value has extra text after the key (often the next rows of a copied table). Edit the record so the Value is ONLY the p=... key from Resend, nothing after it.");
+  } else {
+    add("dkim", clean.length > 0, `DKIM  TXT  ${dkimName}`, clean.map((t) => t.slice(0, 40) + "…"),
+      "Add the DKIM TXT record from Resend → Domains → your domain. Copy the whole value.");
+  }
 
   // Return path / SPF. Two layouts exist, so copy whatever Resend shows:
   //   current: CNAME send.<d> → send.<x>.rmta.net  and  CNAME rsend.<d> → rsend.<x>.rmta.net
