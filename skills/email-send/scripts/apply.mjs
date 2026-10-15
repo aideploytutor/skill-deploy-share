@@ -10,15 +10,24 @@
  * in .env.example, records the install in stack.json, and commits.
  * It never touches secrets: RESEND_API_KEY is typed into Vercel by the owner.
  */
+import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
-const VERSION = "1.0.0";
+const VERSION = "1.1.0";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const FILES = path.join(here, "..", "files");
 const NEW_FILES = ["src/lib/email.ts", "src/app/email-test/page.tsx"];
+// Earlier versions of our own files: replaced on upgrade only if the owner never edited them.
+const PREVIOUS = {
+  "src/app/email-test/page.tsx": [
+    "00f9ef6212739a31e556286f6dbace67d287b12df872a0a3a1e9181c246bec7f",
+    "c36e97e199ddf37cc9eb965187a7ad0dc981ceb3e718a4b322dd9a4cb8920003",
+  ],
+};
+const sha = (f) => crypto.createHash("sha256").update(fs.readFileSync(f)).digest("hex");
 
 const opts = { json: false, check: false, git: true };
 const argv = process.argv.slice(2);
@@ -63,7 +72,9 @@ try {
     const to = path.join(dir, rel);
     const src = fs.readFileSync(path.join(FILES, rel), "utf8");
     if (!fs.existsSync(to)) write(dir, rel, src);
-    else if (fs.readFileSync(to, "utf8") !== src) result.skipped.push(`${rel} (exists, kept yours)`);
+    else if (fs.readFileSync(to, "utf8") === src) continue;
+    else if ((PREVIOUS[rel] || []).includes(sha(to))) write(dir, rel, src);
+    else result.skipped.push(`${rel} (you changed it, kept yours — compare with ${path.join(FILES, rel)})`);
   }
 
   const envEx = path.join(dir, ".env.example");
@@ -75,7 +86,12 @@ try {
       "# RESEND_API_KEY=re_...               (secret: Resend → API Keys, \"Sending access\" only)\n" +
       `# EMAIL_FROM=${stack.name || "我的网站"} <hello@${d}>\n` +
       "# EMAIL_TEST_TO=you@example.com       (where /email-test sends — your own inbox)\n" +
+      "# EMAIL_TEST_CODE=...                 (optional secret: lets /email-test send to other addresses)\n" +
       "# EMAIL_REPLY_TO=you@example.com      (optional: where replies go)\n");
+  }
+
+  else if (!/EMAIL_TEST_CODE/.test(env)) {
+    write(dir, ".env.example", env.replace(/(# EMAIL_TEST_TO=.*\n)/, "$1# EMAIL_TEST_CODE=...                 (optional secret: lets /email-test send to other addresses)\n"));
   }
 
   const want = { ...stack, installed: { ...stack.installed, "email-send": VERSION } };
@@ -84,7 +100,7 @@ try {
 
   if (!opts.check && opts.git && result.changed.length && fs.existsSync(path.join(dir, ".git"))) {
     spawnSync("git", ["add", ...result.changed], { cwd: dir });
-    const c = spawnSync("git", ["commit", "-q", "-m", "Add email-send: sendEmail() via Resend and /email-test"], { cwd: dir, encoding: "utf8" });
+    const c = spawnSync("git", ["commit", "-q", "-m", stack.installed["email-send"] ? `Update email-send to ${VERSION}` : "Add email-send: sendEmail() via Resend and /email-test"], { cwd: dir, encoding: "utf8" });
     result.committed = c.status === 0;
   }
 

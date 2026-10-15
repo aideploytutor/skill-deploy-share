@@ -3,7 +3,7 @@ name: email-send
 description: Let an app-foundation site send email from the owner's own domain (Resend, free tier 3,000/month), with DNS checks so mail doesn't land in spam and a /email-test page. Use when the user says "让网站能发邮件", "发验证码邮件", "send email from my domain", "set up Resend", or a later skill (auth-login, pay-receipts) requires email-send.
 license: MIT
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
   episode: "005"
   requires: "app-foundation, domain-setup (a domain you own); db-connect recommended"
   provides: "src/lib/email.ts sendEmail(); /email-test; email.sent / email.failed events; stack.json email"
@@ -92,7 +92,8 @@ When it passes, click **Verify** in Resend (often verified within 15 minutes; DN
 |---|---|---|
 | `RESEND_API_KEY` | `re_...` | **yes**: owner only, mark Sensitive |
 | `EMAIL_FROM` | `我的小店 <hello@mail.example.com>` | no |
-| `EMAIL_TEST_TO` | the owner's own inbox | no |
+| `EMAIL_TEST_TO` | the owner's own inbox (default recipient on /email-test) | no |
+| `EMAIL_TEST_CODE` | optional test passphrase, needed to send to **other** addresses from /email-test | **yes**: owner only |
 
 You may add the two non-secret ones yourself with the owner's OK.
 
@@ -100,7 +101,7 @@ You may add the two non-secret ones yourself with the owner's OK.
 
 ### 6. Test
 
-Open `https://<domain>/email-test` → **给我发一封测试邮件**. The page only ever emails `EMAIL_TEST_TO`, at most once a minute and 10 times a day, so it can't be abused. Ask the owner whether it arrived in the **inbox** (not spam). In Gmail → ⋮ → Show original, SPF, DKIM and DMARC should all show PASS.
+Open `https://<domain>/email-test`, type any address (or leave it empty to use `EMAIL_TEST_TO`) → **发一封测试邮件**. The page is public, so sending to an address other than `EMAIL_TEST_TO` requires `EMAIL_TEST_CODE`; without that variable it can only email the owner. It always allows at most one email a minute and 10 a day, with fixed content, so strangers can't use the domain to send spam. Never put the address in the URL. After `auth-login` (episode 006), consider limiting this page to admins. Ask the owner whether the email arrived in the **inbox**, not spam. In Gmail → ⋮ → Show original, SPF, DKIM and DMARC should all show PASS.
 
 ## Using it in code
 
