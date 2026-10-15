@@ -89,7 +89,7 @@ Don't ask them to paste it into the chat.
 
 ## Tell the owner (short)
 
-"Your site now has a free database. Anything the site saves stays saved, even after redeploys. Tables are created automatically every time you deploy." Then suggest the next step: **auth-login**, episode 004, which adds email and Google sign-in.
+"Your site now has a free database. Anything the site saves stays saved, even after redeploys. Tables are created automatically every time you deploy." Then suggest the next step: **domain-setup**, episode 004, which binds their own domain (needed later for sending email and email-code login).
 
 ## For skills that add tables later
 
