@@ -4,6 +4,7 @@ import { and, desc, eq, gt, inArray, sql } from "drizzle-orm";
 import { getDb, isDbConfigured } from "@/db";
 import { coreEvents } from "@/db/schema";
 import { isEmailConfigured, maskEmail, sendEmail } from "@/lib/email";
+import stack from "../../../stack.json";
 
 export const metadata: Metadata = { title: "邮件测试" };
 export const dynamic = "force-dynamic";
@@ -33,7 +34,7 @@ async function sendTest() {
   if ((await recentTests(COOLDOWN_S)) > 0) redirect("/email-test?r=wait");
   if ((await recentTests(86400)) >= DAILY_CAP) redirect("/email-test?r=cap");
 
-  const site = process.env.NEXT_PUBLIC_SITE_NAME ?? "我的网站";
+  const site = process.env.NEXT_PUBLIC_SITE_NAME || stack.name || "我的网站";
   const url = process.env.NEXT_PUBLIC_SITE_URL ?? "";
   const time = new Date().toLocaleString("zh-CN", { timeZone: "Asia/Shanghai", hour12: false });
   const r = await sendEmail({
