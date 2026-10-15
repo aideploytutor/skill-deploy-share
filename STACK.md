@@ -32,7 +32,7 @@
 | Cloudflare Workers | 每天 10 万次请求，每次最多 10ms CPU 时间 | 付费版最低每月 5 美元；定价页没有提到禁止商用 | [Pricing](https://developers.cloudflare.com/workers/platform/pricing/) |
 | Neon | 每个项目 1GB 存储、100 CU 小时计算量，最多 100 个项目 | 闲置 5 分钟后自动休眠，有人访问就唤醒 | [Pricing](https://neon.com/pricing) |
 | Supabase | 500MB 数据库、5 万月活、1GB 存储、最多 2 个项目 | **连续 7 天没人访问，项目会被暂停** | [Pricing](https://supabase.com/pricing) |
-| Resend | 每月 3000 封，每天最多 100 封，3 个域名 | 付费版每月 20 美元 | [Pricing](https://resend.com/pricing) |
+| Resend | 每月 3000 封，每天最多 100 封，3 个域名 | 付费版每月 20 美元；没验证域名时只能发给自己（2026-10-14 复核） | [Pricing](https://resend.com/pricing) |
 | Stripe | 没有月费 | 美国本地卡每笔收 2.9% + 30 美分；国际卡另加 1.5% | [Pricing](https://stripe.com/pricing) |
 
 ## 4. 每个 Skill 必须遵守的约定

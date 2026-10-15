@@ -20,6 +20,7 @@ When a user request matches a skill's `description`:
 | [app-foundation](skills/app-foundation/SKILL.md) | The user wants to start a new website/app/shop/SaaS from scratch, or another skill requires `app-foundation`. Example phrasings: "搭一个产品底座", "新建一个项目". |
 | [db-connect](skills/db-connect/SKILL.md) | The user wants the site to save data / connect a database, or another skill requires `db-connect`. Example phrasings: "连上数据库", "让网站能存东西". |
 | [domain-setup](skills/domain-setup/SKILL.md) | The user wants their own domain/subdomain on the site, or `email-send` needs a domain. Example phrasings: "绑定域名", "用我自己的网址". |
+| [email-send](skills/email-send/SKILL.md) | The user wants the site to send email (login codes, receipts) from their own domain, or another skill requires `email-send`. Example phrasings: "让网站能发邮件", "发验证码邮件". |
 
 ## Shared conventions
 Every skill must follow `STACK.md` (shared stack, table prefixes, env var names, requires/provides metadata). The full plan is in `ROADMAP.md`.
