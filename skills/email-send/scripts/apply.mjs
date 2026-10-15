@@ -16,7 +16,7 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
-const VERSION = "1.1.0";
+const VERSION = "1.1.1";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const FILES = path.join(here, "..", "files");
 const NEW_FILES = ["src/lib/email.ts", "src/app/email-test/page.tsx"];
@@ -25,6 +25,7 @@ const PREVIOUS = {
   "src/app/email-test/page.tsx": [
     "00f9ef6212739a31e556286f6dbace67d287b12df872a0a3a1e9181c246bec7f",
     "c36e97e199ddf37cc9eb965187a7ad0dc981ceb3e718a4b322dd9a4cb8920003",
+    "5e11183ee8fa819d3a9c1e6d635c14216d5e4c570dc3a4d3e7a3d96d5e0f43e0",
   ],
 };
 const sha = (f) => crypto.createHash("sha256").update(fs.readFileSync(f)).digest("hex");

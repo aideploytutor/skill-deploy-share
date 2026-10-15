@@ -77,7 +77,7 @@ const MESSAGES: Record<string, [string, string]> = {
   wait: ["⏳ 稍等一下", `每 ${COOLDOWN_S} 秒最多发一封。`],
   cap: ["今天的测试次数用完了", `每天最多 ${DAILY_CAP} 封测试邮件。`],
   config: ["还没配置好", "按下面的清单把环境变量补齐，然后重新部署。"],
-  noto: ["要发给谁？", "填一个邮箱，或者在 Vercel 里设置 EMAIL_TEST_TO。"],
+  noto: ["要发给谁？", "先填一个收件人邮箱。"],
   bad: ["邮箱格式不对", "检查一下有没有多打空格或少了 @。"],
   nocode: ["只能发给你自己", "想发给其他邮箱，先在 Vercel 里设置测试口令 EMAIL_TEST_CODE，然后重新部署。"],
   code: ["测试口令不对", "发给其他邮箱需要正确的测试口令。"],
@@ -92,8 +92,8 @@ export default async function EmailTestPage({ searchParams }: { searchParams: Pr
   const checks: [string, boolean, string][] = [
     ["RESEND_API_KEY", Boolean(process.env.RESEND_API_KEY), "Resend 的发信密钥（只放在 Vercel，别发给任何人）"],
     ["EMAIL_FROM", Boolean(from), from || "发件人，比如 我的小店 <hello@mail.你的域名.com>"],
-    ["EMAIL_TEST_TO", Boolean(owner), owner ? `${maskEmail(owner)}（不填收件人时发到这里）` : "你自己的邮箱：不填收件人时发到这里"],
-    ["EMAIL_TEST_CODE", hasCode, hasCode ? "已设置：发给其他邮箱要输入它" : "可选：设置后才能发给其他邮箱"],
+    ["EMAIL_TEST_TO", Boolean(owner), owner ? `${maskEmail(owner)}（不填收件人时发到这里）` : "可选：你自己的邮箱，不填收件人时发到这里"],
+    ["EMAIL_TEST_CODE", hasCode, hasCode ? (owner ? "已设置：发给其他邮箱要输入它" : "已设置：发邮件要输入它") : "可选：设置后才能发给其他邮箱"],
   ];
 
   const log = isDbConfigured()
@@ -112,7 +112,7 @@ export default async function EmailTestPage({ searchParams }: { searchParams: Pr
       <header className="flex flex-col gap-3">
         <span className="w-fit rounded-full border border-line px-3 py-1 text-xs text-muted">email-send</span>
         <h1 className="text-3xl font-black">邮件测试</h1>
-        <p className="text-muted">填一个邮箱，网站会用你自己的域名给它发一封测试邮件。不填就发给你自己。</p>
+        <p className="text-muted">填一个邮箱，网站会用你自己的域名给它发一封测试邮件。{owner ? "不填就发给你自己。" : ""}</p>
       </header>
 
       <section className="rounded-2xl border border-line">
@@ -140,12 +140,13 @@ export default async function EmailTestPage({ searchParams }: { searchParams: Pr
             type="email"
             autoComplete="off"
             placeholder={owner ? `不填就发给 ${maskEmail(owner)}` : "name@example.com"}
+            required={!owner}
             className="rounded-xl border border-line bg-transparent px-4 py-3"
           />
         </label>
         {hasCode && (
           <label className="flex flex-col gap-2">
-            <span className="text-sm font-bold">测试口令 <span className="font-normal text-muted">（发给别的邮箱时才需要）</span></span>
+            <span className="text-sm font-bold">测试口令 <span className="font-normal text-muted">{owner ? "（发给别的邮箱时才需要）" : ""}</span></span>
             <input
               name="code"
               type="password"
@@ -162,7 +163,7 @@ export default async function EmailTestPage({ searchParams }: { searchParams: Pr
           发一封测试邮件
         </button>
         <p className="text-xs text-muted">
-          为了防止别人借你的域名乱发邮件：发给自己以外的邮箱需要测试口令；每 {COOLDOWN_S} 秒最多 1 封、每天最多 {DAILY_CAP} 封；邮件内容固定，不能自定义。
+          为了防止别人借你的域名乱发邮件：{owner ? "发给自己以外的邮箱" : "发邮件"}需要测试口令；每 {COOLDOWN_S} 秒最多 1 封、每天最多 {DAILY_CAP} 封；邮件内容固定，不能自定义。
         </p>
       </form>
 

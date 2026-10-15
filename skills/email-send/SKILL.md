@@ -3,7 +3,7 @@ name: email-send
 description: Let an app-foundation site send email from the owner's own domain (Resend, free tier 3,000/month), with DNS checks so mail doesn't land in spam and a /email-test page. Use when the user says "让网站能发邮件", "发验证码邮件", "send email from my domain", "set up Resend", or a later skill (auth-login, pay-receipts) requires email-send.
 license: MIT
 metadata:
-  version: "1.1.0"
+  version: "1.1.1"
   episode: "005"
   requires: "app-foundation, domain-setup (a domain you own); db-connect recommended"
   provides: "src/lib/email.ts sendEmail(); /email-test; email.sent / email.failed events; stack.json email"
@@ -92,7 +92,7 @@ When it passes, click **Verify** in Resend (often verified within 15 minutes; DN
 |---|---|---|
 | `RESEND_API_KEY` | `re_...` | **yes**: owner only, mark Sensitive |
 | `EMAIL_FROM` | `我的小店 <hello@mail.example.com>` | no |
-| `EMAIL_TEST_TO` | the owner's own inbox (default recipient on /email-test) | no |
+| `EMAIL_TEST_TO` | optional: the owner's inbox, used when the recipient field is left empty (and the only address allowed without the code). Leave it out to keep the owner's address off the public page | no |
 | `EMAIL_TEST_CODE` | optional test passphrase, needed to send to **other** addresses from /email-test | **yes**: owner only |
 
 You may add the two non-secret ones yourself with the owner's OK.
