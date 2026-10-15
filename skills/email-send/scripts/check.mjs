@@ -7,7 +7,7 @@
  *   node check.mjs --domain mail.example.com --json
  *
  * Read-only: looks up public DNS (DNS-over-HTTPS). Changes nothing, needs no key.
- * Checks: DKIM (resend._domainkey), SPF + MX on the return-path (send.), DMARC,
+ * Checks: DKIM (resend._domainkey), the return path (send. / rsend. CNAMEs, or older MX + SPF), DMARC,
  * and the classic mistake of a DNS panel adding your domain twice to the Host.
  */
 const opts = { json: false, wait: 0, returnPath: "send" };
@@ -52,16 +52,29 @@ async function once() {
   add("dkim", dkim.length > 0, `DKIM  TXT  ${dkimName}`, dkim.map((t) => t.slice(0, 40) + "…"),
     "Add the DKIM TXT record from Resend → Domains → your domain. Copy the whole value.");
 
-  // SPF — required (Resend sends through Amazon SES)
-  const spf = (await dns(rp, "TXT")).filter((t) => /^v=spf1/i.test(t));
-  add("spf", spf.some((t) => /amazonses\.com/i.test(t)), `SPF   TXT  ${rp}`, spf,
-    spf.length > 1 ? "Only ONE v=spf1 record is allowed per name: merge them." : "Add the SPF TXT record from Resend (v=spf1 include:amazonses.com ~all).");
-  if (spf.length > 1) items[items.length - 1].ok = false;
-
-  // MX on the return path — required for bounces
-  const mx = await dns(rp, "MX");
-  add("mx", mx.some((m) => /amazonses\.com/i.test(m)), `MX    ${rp}`, mx,
-    "Add the MX record from Resend (feedback-smtp.<region>.amazonses.com, priority 10).");
+  // Return path / SPF. Two layouts exist, so copy whatever Resend shows:
+  //   current: CNAME send.<d> → send.<x>.rmta.net  and  CNAME rsend.<d> → rsend.<x>.rmta.net
+  //   older:   MX send.<d> → feedback-smtp.<region>.amazonses.com  and  TXT send.<d> "v=spf1 include:amazonses.com ~all"
+  const rpCname = await dns(rp, "CNAME");
+  if (rpCname.length) {
+    add("spf", rpCname.some((c) => /rmta\.net$|amazonses\.com$/i.test(c)), `SPF   CNAME ${rp}`, rpCname,
+      "Point this CNAME at the value Resend shows (e.g. send.forge.rmta.net).");
+    const rs = `r${rp}`;
+    const rsCname = await dns(rs, "CNAME");
+    add("rsend", rsCname.some((c) => /rmta\.net$/i.test(c)), `SPF   CNAME ${rs}`, rsCname,
+      "Add the second CNAME from Resend (e.g. rsend → rsend.forge.rmta.net).");
+  } else {
+    const spf = (await dns(rp, "TXT")).filter((t) => /^v=spf1/i.test(t));
+    const mx = await dns(rp, "MX");
+    if (!spf.length && !mx.length) {
+      add("spf", false, `SPF   ${rp}`, [], "Add the SPF records Resend shows for this host (CNAME send → …rmta.net, or MX + TXT on older accounts).");
+    } else {
+      add("spf", spf.length === 1 && /amazonses\.com/i.test(spf[0]), `SPF   TXT  ${rp}`, spf,
+        spf.length > 1 ? "Only ONE v=spf1 record is allowed per name: merge them." : "Add the SPF TXT record from Resend (v=spf1 include:amazonses.com ~all).");
+      add("mx", mx.some((m) => /amazonses\.com/i.test(m)), `MX    ${rp}`, mx,
+        "Add the MX record from Resend (feedback-smtp.<region>.amazonses.com, priority 10).");
+    }
+  }
 
   // DMARC — recommended (not required by Resend)
   let dmarc = await dns(`_dmarc.${d}`, "TXT");
@@ -74,8 +87,8 @@ async function once() {
   // Doubled host: Namecheap/GoDaddy append the domain themselves, so "resend._domainkey.mail.example.com" typed as Host
   // becomes resend._domainkey.mail.example.com.example.com
   const doubled = [];
-  for (const name of [`resend._domainkey.${d}.${apex}`, `${rp}.${apex}`]) {
-    if ((await dns(name, "TXT")).length || (await dns(name, "MX")).length) doubled.push(name);
+  for (const name of [`resend._domainkey.${d}.${apex}`, `${rp}.${apex}`, `r${rp}.${apex}`]) {
+    if ((await dns(name, "TXT")).length || (await dns(name, "CNAME")).length || (await dns(name, "MX")).length) doubled.push(name);
   }
   if (doubled.length) {
     items.push({ code: "doubled-host", ok: false, label: "Host typed with the full domain", found: doubled,
