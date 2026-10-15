@@ -21,6 +21,7 @@ When a user request matches a skill's `description`:
 | [db-connect](skills/db-connect/SKILL.md) | The user wants the site to save data / connect a database, or another skill requires `db-connect`. Example phrasings: "连上数据库", "让网站能存东西". |
 | [domain-setup](skills/domain-setup/SKILL.md) | The user wants their own domain/subdomain on the site, or `email-send` needs a domain. Example phrasings: "绑定域名", "用我自己的网址". |
 | [email-send](skills/email-send/SKILL.md) | The user wants the site to send email (login codes, receipts) from their own domain, or another skill requires `email-send`. Example phrasings: "让网站能发邮件", "发验证码邮件". |
+| [auth-login](skills/auth-login/SKILL.md) | The user wants sign-in (Google, email code) on the site, or another skill requires `auth-login`. Example phrasings: "加登录", "Google 登录", "邮箱验证码登录". |
 
 ## Shared conventions
 Every skill must follow `STACK.md` (shared stack, table prefixes, env var names, requires/provides metadata). The full plan is in `ROADMAP.md`.
