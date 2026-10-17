@@ -13,7 +13,7 @@
 | 004 | ✅ [domain-setup](skills/domain-setup/) | 绑定你自己的域名 | github-vercel-deploy |
 | 005 | ✅ [email-send](skills/email-send/) | 让网站能发邮件 | domain-setup, app-foundation |
 | 006 | ✅ [auth-login](skills/auth-login/) | Google 和邮箱验证码登录 | db-connect, email-send |
-| 007 | `env-secrets` | 密钥放对地方，永远不泄露 | — |
+| 007 | ✅ [env-secrets](skills/env-secrets/) | 密钥放对地方，永远不泄露 | — |
 | 008 | `file-upload` | 用户上传图片和文件 | app-foundation |
 | 009 | `deploy-cloudflare` | 要收钱了：换到能商用的托管 | app-foundation |
 | 010 | `db-backup` | 每天自动备份数据库 | db-connect |

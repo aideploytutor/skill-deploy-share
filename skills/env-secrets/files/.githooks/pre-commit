@@ -1,0 +1,8 @@
+#!/bin/sh
+# env-secrets (episode 007): stop a commit that contains a secret key.
+# Runs on macOS, Linux and Windows (Git for Windows ships sh).
+node scripts/secret-scan.mjs --staged || {
+  echo ""
+  echo "Commit stopped: remove the key from the file first (see above)."
+  exit 1
+}

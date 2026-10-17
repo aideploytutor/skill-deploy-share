@@ -31,6 +31,7 @@
 | [domain-setup](skills/domain-setup/) | 把自己的域名或子域名绑到网站上，HTTPS 自动配好，附带检查脚本 | [使用说明](skills/domain-setup/README.md) |
 | [email-send](skills/email-send/) | 让网站用自己的域名发邮件（Resend，每月 3000 封免费），附带 DNS 检查脚本和测试页 | [使用说明](skills/email-send/README.md) |
 | [auth-login](skills/auth-login/) | 用户登录：Google 一键登录 + 邮箱验证码，用户存在自己的数据库，不按人头收费 | [使用说明](skills/auth-login/README.md) |
+| [env-secrets](skills/env-secrets/) | 密钥放对地方：扫描泄露的 API Key、提交前自动拦截、泄露后怎么换钥匙 | [使用说明](skills/env-secrets/README.md) |
 
 > 新增技能后，在上表加一行（`AGENTS.md` 里的表也要同步加）。
 
