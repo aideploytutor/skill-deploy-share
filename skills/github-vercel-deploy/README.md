@@ -1,64 +1,64 @@
-# github-vercel-deploy
+# github-vercel-deploy (episode 001)
 
-把本地项目从零推到 GitHub，在 Vercel 上建项目并连接仓库，部署上线。之后每次 push 到 main 会自动更新网站，其他分支会生成预览链接。
+Push a local project to a new GitHub repo, create a Vercel project connected to it, and go live. After that, every push to `main` updates the site automatically, and other branches get preview links.
 
-## 在 Agent 里使用
+## Use it from your agent
 
-安装好技能后（见[总 README](../../README.md#安装)），在项目里对 Agent 说：
+After installing the skills (see the [main README](../../README.md#install)), open your project and tell your agent:
 
-> 把这个项目部署到 GitHub 和 Vercel
+> Deploy this project to GitHub and Vercel
 
-Agent 会依次：
-1. 检查环境和账号；
-2. 和你确认仓库名、公开还是私有（默认私有）；
-3. 运行部署脚本；
-4. 把仓库地址和网址告诉你。
+The agent will:
+1. check your environment and accounts;
+2. confirm the repo name and whether it's public or private (private by default);
+3. run the deploy script;
+4. give you the repo URL and the live URL.
 
-## 前置条件
+## Prerequisites
 
-- git，以及 Node.js 18 或更高版本
-- 两个令牌，放进项目里的 `.env.deploy`，或者用户目录下的 `~/.env.deploy`。这个文件会自动被 git 忽略，**不要贴到聊天里**：
+- git, and Node.js 18 or newer
+- Two tokens in `.env.deploy` in the project, or `~/.env.deploy` in your home folder. The file is git-ignored automatically. **Don't paste these into a chat**:
 
 ```
 GITHUB_TOKEN=...   # https://github.com/settings/tokens/new?scopes=repo&description=skill-deploy
 VERCEL_TOKEN=...   # https://vercel.com/account/tokens
 ```
 
-如果电脑上已经装了 `gh` 并且登录过，GitHub 令牌会自动读取，不用另外配置。
+If `gh` is installed and signed in, the GitHub token is picked up automatically.
 
-## 直接当命令行工具用
+## Run it as a command-line tool
 
 ```bash
-node scripts/deploy.mjs --dir ../my-app --check        # 只检查，不做改动
-node scripts/deploy.mjs --dir ../my-app --yes          # 部署（私有仓库）
-node scripts/deploy.mjs --dir ../my-app --yes --public # 部署（公开仓库）
-node scripts/deploy.mjs --dir ../my-app --yes --json   # 输出 JSON，给程序或 CI 用
-node scripts/deploy.mjs --help                         # 全部参数
+node scripts/deploy.mjs --dir ../my-app --check        # check only, change nothing
+node scripts/deploy.mjs --dir ../my-app --yes          # deploy (private repo)
+node scripts/deploy.mjs --dir ../my-app --yes --public # deploy (public repo)
+node scripts/deploy.mjs --dir ../my-app --yes --json   # JSON output for programs or CI
+node scripts/deploy.mjs --help                         # all options
 ```
 
-| 退出码 | 含义 |
+| Exit code | Meaning |
 |---|---|
-| 0 | 成功 |
-| 2 | 缺少令牌，或令牌无效 |
-| 3 | 缺少 git 或 Node |
-| 5 | 发现疑似密钥，已停止，没有推送 |
-| 6 | Vercel 看不到这个 GitHub 仓库（多半是账号不一致） |
-| 7 | 部署或构建失败 |
-| 10 | 需要用户确认（加上 `--yes` 后重新运行） |
+| 0 | Success |
+| 2 | Token missing or invalid |
+| 3 | git or Node missing |
+| 5 | Possible secret found; stopped before pushing |
+| 6 | Vercel can't see the GitHub repo (usually an account mismatch) |
+| 7 | Deploy or build failed |
+| 10 | Needs the user's confirmation (re-run with `--yes`) |
 
-## 没有命令行的环境
+## No command line?
 
-有些环境不能在本机运行脚本，或者网络连不上 Vercel，比如云端对话。这种情况见 [references/browser-mode.md](references/browser-mode.md)：由 Agent 操作浏览器完成建仓库和导入 Vercel。这套流程已经实测跑通。
+Some environments can't run scripts locally or can't reach Vercel's API, such as cloud chat sessions. See [references/browser-mode.md](references/browser-mode.md): the agent drives a browser to create the repo and import it into Vercel. This flow has been tested end to end.
 
-## 已知问题与修复记录
+## Known issues and fixes
 
-| 问题 | 处理 |
+| Problem | Fix |
 |---|---|
-| Windows 装完 `gh` 后提示 "not recognized" | 不再依赖 `gh` 和 `vercel` CLI |
-| `vercel login` 一直停在 "Waiting for authentication..." | 改用 `VERCEL_TOKEN`，不进入交互式登录 |
-| 必须双击 `.bat` 才能运行 | 改由 Agent 运行脚本；需要确认时返回退出码 10，Agent 在对话里问用户 |
-| PowerShell 脚本里的中文乱码 | 改用 Node 脚本 |
-| Vercel 绑定的 GitHub 账号和仓库所有者不一致，Deploy 点了没反应 | 自动识别并给出修复步骤 |
-| 云端会话不能用 API 创建仓库 | 用浏览器模式 |
+| Windows says `gh` is "not recognized" after installing it | No longer depends on the `gh` or `vercel` CLIs |
+| `vercel login` hangs at "Waiting for authentication..." | Uses `VERCEL_TOKEN` instead of interactive login |
+| Had to double-click a `.bat` file | The agent runs the script; when confirmation is needed it exits with code 10 and the agent asks in the chat |
+| Garbled characters in PowerShell scripts | Rewritten as a Node script |
+| Vercel's linked GitHub account doesn't own the repo, so Deploy does nothing | Detected automatically, with steps to fix |
+| Cloud sessions can't create repos through the API | Use browser mode |
 
-更多排错见 [references/troubleshooting.md](references/troubleshooting.md)。
+More troubleshooting in [references/troubleshooting.md](references/troubleshooting.md).

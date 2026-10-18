@@ -16,16 +16,18 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
-const VERSION = "1.1.1";
+const VERSION = "1.2.0";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const FILES = path.join(here, "..", "files");
 const NEW_FILES = ["src/lib/email.ts", "src/app/email-test/page.tsx"];
 // Earlier versions of our own files: replaced on upgrade only if the owner never edited them.
 const PREVIOUS = {
+  "src/lib/email.ts": ["2a48202f40f13b9a1491d8091a9671f26ed1a0c7433697d2ff861f5e577ae4ac"], // 1.1.1
   "src/app/email-test/page.tsx": [
     "00f9ef6212739a31e556286f6dbace67d287b12df872a0a3a1e9181c246bec7f",
     "c36e97e199ddf37cc9eb965187a7ad0dc981ceb3e718a4b322dd9a4cb8920003",
     "5e11183ee8fa819d3a9c1e6d635c14216d5e4c570dc3a4d3e7a3d96d5e0f43e0",
+    "dfe501a3b0ad32912dc51b5ec56bae1ca719aa9295211fc832270f5e0d780c9b", // 1.1.1 (Chinese UI)
   ],
 };
 const sha = (f) => crypto.createHash("sha256").update(fs.readFileSync(f)).digest("hex");
@@ -85,7 +87,7 @@ try {
     write(dir, ".env.example", env.trimEnd() +
       "\n\n# email-send (episode 005) — set these in Vercel → Settings → Environment Variables.\n" +
       "# RESEND_API_KEY=re_...               (secret: Resend → API Keys, \"Sending access\" only)\n" +
-      `# EMAIL_FROM=${stack.name || "我的网站"} <hello@${d}>\n` +
+      `# EMAIL_FROM=${stack.name || "My Site"} <hello@${d}>\n` +
       "# EMAIL_TEST_TO=you@example.com       (where /email-test sends — your own inbox)\n" +
       "# EMAIL_TEST_CODE=...                 (optional secret: lets /email-test send to other addresses)\n" +
       "# EMAIL_REPLY_TO=you@example.com      (optional: where replies go)\n");

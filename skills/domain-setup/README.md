@@ -1,37 +1,37 @@
-# domain-setup（第 004 期）
+# domain-setup (episode 004)
 
-把你自己的域名，或者一个子域名（比如 `shop.你的域名.com`），绑定到 Vercel 上的网站，HTTPS 证书自动签发、自动续期。下一期用自己的域名发邮件，也要靠这一步。
+Point your own domain, or a subdomain such as `shop.yourdomain.com`, at your site on Vercel. The HTTPS certificate is issued and renewed automatically. Sending email from your own domain (next episode) depends on this step.
 
-## 对 AI 说
+## Tell your AI
 
-> 用 domain-setup 把我的域名绑到网站上
+> Use domain-setup to connect my domain to my site
 
-## 实测记录（2026-10-14）
+## Live test (2026-10-14)
 
-- 域名注册商：Namecheap，绑定的是子域名 `shop.labpencil.com`，主站完全没受影响
-- 添加 1 条 CNAME 记录，约 2 分钟后网站可以访问；最开始 1 分钟打不开，是因为 HTTPS 证书还在签发
-- 踩到的坑：从 Vercel 接口拿到的是旧值 `cname.vercel-dns.com`，而域名设置页显示"DNS Change Recommended"，推荐使用项目专属的 `xxxx.vercel-dns-017.com`。旧值也能用，但请以 **Vercel 域名设置页上显示的值为准**
+- Registrar: Namecheap; connected the subdomain `shop.labpencil.com`, the main site was untouched
+- Added 1 CNAME record; the site was reachable after about 2 minutes. It failed for the first minute because the HTTPS certificate was still being issued
+- Gotcha: Vercel's API returned the legacy value `cname.vercel-dns.com`, while the Domains page said "DNS Change Recommended" and showed a project-specific `xxxx.vercel-dns-017.com`. The legacy value still works, but **use the value shown on Vercel's Domains page**
 
-## 还没有域名？
+## No domain yet?
 
-- 推荐 **Cloudflare Registrar**：按成本价卖，续费和首年同价（`.com` 在 2026-10-14 核实为 $10.46/年）
-- 小心"首年 1 块、续费 100"的套路，买之前一定看清续费价
-- 优先选 `.com`，冷门后缀可能被邮件系统当成垃圾邮件来源
+- We recommend **Cloudflare Registrar**: sold at cost, and renewals cost the same as the first year (`.com` was $10.46/year when checked on 2026-10-14)
+- Watch out for "$1 the first year, $40 to renew" deals; always check the renewal price
+- Prefer `.com`; unusual TLDs are more likely to be treated as spam by email providers
 
-## 常见问题
+## Common problems
 
-| 现象 | 原因 |
+| Symptom | Cause |
 |---|---|
-| 刚加完记录打不开 | DNS 还在生效，或者证书还在签发，等几分钟 |
-| 提示"重定向次数过多"或证书错误 | Cloudflare 的橙色云朵代理开着，改成灰色（DNS only） |
-| 访问到的还是旧网站 | 同一个主机名还有旧的 A/CNAME 记录，经你确认后删掉 |
-| 国内访问慢或打不开 | Vercel 官方说明 `.vercel.app` 在国内可能被拦截，自己的域名会好一些，但不保证能访问 |
+| Site won't open right after adding the record | DNS is still propagating or the certificate is still being issued; wait a few minutes |
+| "Too many redirects" or certificate errors | Cloudflare's orange-cloud proxy is on; switch it to grey (DNS only) |
+| You still see the old site | The same hostname still has an old A/CNAME record; delete it once you've confirmed |
+| Slow or blocked in mainland China | Vercel says `.vercel.app` may be blocked there; your own domain helps but access isn't guaranteed |
 
-## 检查脚本（只读，不会改任何东西）
+## Checker script (read-only, changes nothing)
 
 ```bash
 node scripts/check.mjs --domain shop.example.com --wait 600
 node scripts/check.mjs --domain example.com --www
 ```
 
-脚本会检查 DNS 记录、HTTPS、是否开了橙色云朵代理、CAA 记录，以及是否还在用 Vercel 的旧值。
+It checks the DNS records, HTTPS, whether the orange-cloud proxy is on, CAA records, and whether you're still on Vercel's legacy value.

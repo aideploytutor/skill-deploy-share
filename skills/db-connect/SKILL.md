@@ -1,9 +1,9 @@
 ---
 name: db-connect
-description: Connect a free Postgres database (Neon, created from the Vercel dashboard) to an app-foundation project so the site can save data; tables are created automatically on every deploy. Use when the user says "连上数据库", "让网站能存东西", "connect a database", or another skill requires db-connect.
+description: Connect a free Postgres database (Neon, created from the Vercel dashboard) to an app-foundation project so the site can save data; tables are created automatically on every deploy. Use when the user says "connect a database", "make my site save data", or another skill requires db-connect.
 license: MIT
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
   episode: "003"
   requires: "app-foundation"
   provides: "scripts/db-migrate.mjs (runs before every build), DB check in /api/health and /status, /db-test page, drizzle/ migrations"
@@ -76,8 +76,8 @@ If it shows `Failed`, the build stops on purpose. The usual causes are the datab
 ### 5. Verify
 
 - Open `https://<project>.vercel.app/api/health` and check that `database.status` is `"connected"`.
-- Open `/db-test`, press **存一条测试数据**, reload, and confirm the row is still there.
-- Open `/status` and check that it says 已连接 with a latency in ms.
+- Open `/db-test`, press **Save a test row**, reload, and confirm the row is still there.
+- Open `/status` and check that it says Connected with a latency in ms.
 
 ### 6. Local development (optional)
 

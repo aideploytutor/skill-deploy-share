@@ -10,7 +10,7 @@ export default function SignOut() {
       onClick={async () => { await authClient.signOut(); router.replace("/login"); router.refresh(); }}
       className="w-fit rounded-full border border-line px-6 py-3 font-bold transition active:scale-95"
     >
-      退出登录
+      Sign out
     </button>
   );
 }

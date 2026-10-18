@@ -1,9 +1,9 @@
 ---
 name: app-foundation
-description: Create a new web product foundation (Next.js + TypeScript + Tailwind + Postgres via Drizzle) that every other skill in skill-deploy-share builds on. Use when the user wants to start a new project, website, app, shop or SaaS from scratch, says "搭一个产品底座", "新建一个项目", "从零开始做一个网站", or another skill requires app-foundation.
+description: Create a new web product foundation (Next.js + TypeScript + Tailwind + Postgres via Drizzle) that every other skill in skill-deploy-share builds on. Use when the user wants to start a new project, website, app, shop or SaaS from scratch, says "start a new project" or "set up a foundation for my shop", or another skill requires app-foundation.
 license: MIT
 metadata:
-  version: "1.0.2"
+  version: "1.1.0"
   episode: "002"
   requires: ""
   provides: "Next.js app, src/db (Drizzle + Postgres client), core_events table, emitEvent(), /api/health, /status, stack.json, project AGENTS.md"
@@ -66,15 +66,15 @@ cd "<folder>"
 npm run dev
 ```
 
-Open http://localhost:3000, in the browser tool if you have one, and confirm the homepage shows the product name and the "接下来" checklist. Also check http://localhost:3000/api/health, which returns `"ok": true`.
+Open http://localhost:3000, in the browser tool if you have one, and confirm the homepage shows the product name and the "Next steps" checklist. Also check http://localhost:3000/api/health, which returns `"ok": true`.
 
 ## 5. Tell the user (short, plain)
 
 - Where the project is, and that it's running at http://localhost:3000.
 - What they have: a working website foundation. It isn't connected to a database yet, so nothing is stored, and that's expected.
 - What to say next:
-  - 「用 github-vercel-deploy 把这个项目部署到 GitHub 和 Vercel」 (episode 001) to put it online.
-  - 「用 db-connect 给我的项目连上一个免费数据库」 (episode 003) to save data.
+  - "Use github-vercel-deploy to deploy this project to GitHub and Vercel" (episode 001) to put it online.
+  - "Use db-connect to connect a free database to my project" (episode 003) to save data.
 
 ## Deploying it
 

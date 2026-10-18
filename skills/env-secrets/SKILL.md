@@ -1,6 +1,6 @@
 ---
 name: env-secrets
-description: Keep API keys and passwords out of code, git and chat. Scans the project and its git history for leaked keys, blocks commits that contain one, and walks the owner through replacing a leaked key. Use when the user says "检查密钥泄露", "API Key 发出去了怎么办", "key leaked", "scan for secrets", after anyone pastes a key into a chat, or before making a repo public.
+description: Keep API keys and passwords out of code, git and chat. Scans the project and its git history for leaked keys, blocks commits that contain one, and walks the owner through replacing a leaked key. Use when the user says "I leaked my API key", "check for leaked keys", "scan for secrets", after anyone pastes a key into a chat, or before making a repo public.
 license: MIT
 metadata:
   version: "1.0.0"

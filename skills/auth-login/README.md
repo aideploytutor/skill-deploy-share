@@ -1,37 +1,38 @@
-# auth-login（第 006 期）
+# auth-login (episode 006)
 
-给网站加上用户登录：**用 Google 登录**，或者**邮箱收 6 位验证码登录**。不用设密码，第一次登录自动注册。用户数据存在你自己的数据库里，用户再多也不按人头收费（开源的 Better Auth）。
+Add sign-in to your site: **Sign in with Google**, or **a 6-digit code by email**. No passwords; the first sign-in creates the account. Users live in your own database, with no per-user fees (open-source Better Auth).
 
-## 对 AI 说
+## Tell your AI
 
-> 用 auth-login 给我的网站加上 Google 和邮箱验证码登录
+> Use auth-login to add Google and email-code sign-in to my site
 
-## 需要先有
+## You need first
 
-- 第 002 期 底座、第 003 期 数据库
-- 第 005 期 发邮件（邮箱验证码要用；只用 Google 登录可以不装）
-- 最好有自己的域名（第 004 期）
+- Episode 002 (foundation) and episode 003 (database)
+- Episode 005 (email) for email codes; not needed for Google-only
+- Ideally your own domain (episode 004)
 
-## 你需要做的（AI 一步步带你）
+## What you'll do (the AI walks you through it)
 
-1. 打开 `你的网址/login`，点「生成一个」，把密钥**自己**粘贴到 Vercel 的 `BETTER_AUTH_SECRET`
-2. Google Cloud 里：同意条款这一步自己点；建好后弹出的 Client ID / Client secret **自己**复制到 Vercel
-3. 其他表单 AI 帮你填：项目、授权页、回调地址、隐私政策链接，最后发布成正式版
+1. Open `yoursite/login`, click "Generate", and paste the secret into Vercel as `BETTER_AUTH_SECRET` **yourself**
+2. In Google Cloud: agreeing to the terms is your click, and you copy the Client ID / Client secret into Vercel **yourself** when they appear
+3. The AI fills in everything else: project, consent screen, callback URL, privacy policy link, and publishing to production
 
-全程**不要把任何密钥发到聊天里**。
+Never paste any key into a chat.
 
-## 为什么先不做微信登录
+## Common problems
 
-微信网站登录要先在微信开放平台注册开发者账号、通过开发者资质认证，再创建网站应用并通过审核，还要单独申请微信登录权限并通过审核，回调域名也要和审核时填的一致。流程长，个人开发者起步不划算。Better Auth 支持微信登录，以后加上不用改用户表。
-
-## 常见问题
-
-| 现象 | 原因 |
+| Symptom | Cause |
 |---|---|
-| Google 提示 `redirect_uri_mismatch` | 回调地址要和 `https://你的域名/api/auth/callback/google` 一字不差 |
-| 登录页显示「登录还没配好」 | 缺环境变量；加完要**重新部署**才生效 |
-| 别人用 Google 登录被拦 | 授权页还在 Testing，去 Audience 点 Publish app |
-| 验证码收不到 | 看垃圾箱；Resend 免费版每天 100 封 |
-| 提示「操作太频繁」 | 防刷：每分钟最多发 3 个验证码 |
+| Google says `redirect_uri_mismatch` | The callback must be exactly `https://yourdomain/api/auth/callback/google` |
+| The login page says sign-in isn't set up | An environment variable is missing; **redeploy** after adding it |
+| Other people's Google sign-in is blocked | The consent screen is still in Testing; go to Audience → Publish app |
+| The code never arrives | Check spam; Resend's free tier allows 100 emails a day |
+| "Too many requests" | Abuse protection: one code per 60 seconds |
+| "Invalid code" right after requesting one | Enter the code in the same browser that requested it |
 
-`/privacy` 是隐私政策模板，Google 要求有这个链接，记得按你的实际情况改。
+`/privacy` is a privacy policy template (Google requires the link). Edit it to match your site.
+
+## Other sign-in methods
+
+Better Auth supports many more providers (GitHub, Apple, Microsoft, WeChat…) and passkeys. They can be added later without changing the user tables.

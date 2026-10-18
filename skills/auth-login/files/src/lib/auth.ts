@@ -12,7 +12,7 @@ import stack from "../../stack.json";
  * auth-login (episode 006): sign in with Google, or with a 6-digit code sent by email.
  * Built on Better Auth: users live in YOUR database (auth_* tables), no per-user fees.
  */
-const siteName = process.env.NEXT_PUBLIC_SITE_NAME || stack.name || "我的网站";
+const siteName = process.env.NEXT_PUBLIC_SITE_NAME || stack.name || "My Site";
 
 export function isGoogleConfigured(): boolean {
   return Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET);
@@ -83,12 +83,12 @@ function createAuth() {
           const r = await sendEmail({
             to: email,
             tag: "login-code",
-            subject: `${otp} 是你的${siteName}登录验证码`,
-            text: `你的登录验证码是 ${otp}，5 分钟内有效。\n如果不是你本人操作，忽略这封邮件即可。`,
+            subject: `${otp} is your ${siteName} sign-in code`,
+            text: `Your sign-in code is ${otp}. It works for 5 minutes.\nIf you didn't ask for it, you can ignore this email.`,
             html: `<div style="font-family:system-ui,sans-serif;font-size:16px;line-height:1.6">
-              <p>你的${siteName}登录验证码：</p>
+              <p>Your ${siteName} sign-in code:</p>
               <p style="font-size:32px;font-weight:800;letter-spacing:6px;margin:12px 0">${otp}</p>
-              <p style="color:#666">5 分钟内有效。如果不是你本人操作，忽略这封邮件即可。</p>
+              <p style="color:#666">It works for 5 minutes. If you didn't ask for it, you can ignore this email.</p>
             </div>`,
           });
           if (!r.ok) throw new Error(r.error);

@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import SignOut from "./sign-out";
 
-export const metadata: Metadata = { title: "我的账号" };
+export const metadata: Metadata = { title: "My account" };
 export const dynamic = "force-dynamic";
 
 export default async function AccountPage() {
@@ -12,10 +12,10 @@ export default async function AccountPage() {
   if (!user) redirect("/login?next=/account");
 
   const rows: [string, string][] = [
-    ["名字", user.name || "（未设置）"],
-    ["邮箱", user.email],
-    ["邮箱已验证", user.emailVerified ? "是" : "否"],
-    ["注册时间", new Date(user.createdAt).toLocaleString("zh-CN", { timeZone: "Asia/Shanghai", hour12: false })],
+    ["Name", user.name || "(not set)"],
+    ["Email", user.email],
+    ["Email verified", user.emailVerified ? "Yes" : "No"],
+    ["Joined", new Date(user.createdAt).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" }) + " UTC"],
   ];
   return (
     <main className="mx-auto flex max-w-md flex-col gap-8 px-5 py-16">
@@ -29,7 +29,7 @@ export default async function AccountPage() {
           </span>
         )}
         <div className="min-w-0">
-          <span className="text-xs text-muted">auth-login · 已登录</span>
+          <span className="text-xs text-muted">auth-login · signed in</span>
           <h1 className="truncate text-2xl font-black">{user.name || user.email}</h1>
         </div>
       </header>

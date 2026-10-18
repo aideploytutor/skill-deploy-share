@@ -6,7 +6,7 @@ import { coreEvents } from "@/db/schema";
 import { isEmailConfigured, maskEmail, sendEmail } from "@/lib/email";
 import stack from "../../../stack.json";
 
-export const metadata: Metadata = { title: "邮件测试" };
+export const metadata: Metadata = { title: "Email test" };
 export const dynamic = "force-dynamic";
 
 // This page is public. To stop strangers using your domain to email people:
@@ -54,17 +54,17 @@ async function sendTest(form: FormData) {
   if ((await recentTests(COOLDOWN_S)) > 0) redirect("/email-test?r=wait");
   if ((await recentTests(86400)) >= DAILY_CAP) redirect("/email-test?r=cap");
 
-  const site = process.env.NEXT_PUBLIC_SITE_NAME || stack.name || "我的网站";
+  const site = process.env.NEXT_PUBLIC_SITE_NAME || stack.name || "My Site";
   const url = process.env.NEXT_PUBLIC_SITE_URL ?? "";
-  const time = new Date().toLocaleString("zh-CN", { timeZone: "Asia/Shanghai", hour12: false });
+  const time = new Date().toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" }) + " UTC";
   const r = await sendEmail({
     to,
     tag: "test",
-    subject: `【${site}】测试邮件：网站已经能发邮件了`,
-    text: `这是一封测试邮件，发送时间 ${time}。\n收到它，说明这个网站已经能用自己的域名发邮件了。\n${url}`,
+    subject: `[${site}] Test email: your site can send email`,
+    text: `This is a test email, sent at ${time}.\nIf you got it, this site can now send email from its own domain.\n${url}`,
     html: `<div style="font-family:system-ui,sans-serif;font-size:16px;line-height:1.6">
-      <p>这是一封测试邮件，发送时间 ${time}。</p>
-      <p>收到它，说明这个网站已经能用<b>自己的域名</b>发邮件了。</p>
+      <p>This is a test email, sent at ${time}.</p>
+      <p>If you got it, this site can now send email from <b>its own domain</b>.</p>
       ${url ? `<p><a href="${url}">${url}</a></p>` : ""}
     </div>`,
   });
@@ -73,15 +73,15 @@ async function sendTest(form: FormData) {
 }
 
 const MESSAGES: Record<string, [string, string]> = {
-  ok: ["✅ 已发送", "去邮箱看看，记得也看一眼垃圾箱。"],
-  wait: ["⏳ 稍等一下", `每 ${COOLDOWN_S} 秒最多发一封。`],
-  cap: ["今天的测试次数用完了", `每天最多 ${DAILY_CAP} 封测试邮件。`],
-  config: ["还没配置好", "按下面的清单把环境变量补齐，然后重新部署。"],
-  noto: ["要发给谁？", "先填一个收件人邮箱。"],
-  bad: ["邮箱格式不对", "检查一下有没有多打空格或少了 @。"],
-  nocode: ["只能发给你自己", "想发给其他邮箱，先在 Vercel 里设置测试口令 EMAIL_TEST_CODE，然后重新部署。"],
-  code: ["测试口令不对", "发给其他邮箱需要正确的测试口令。"],
-  fail: ["❌ 发送失败", ""],
+  ok: ["✅ Sent", "Check the inbox, and the spam folder too."],
+  wait: ["⏳ Hold on", `One email every ${COOLDOWN_S} seconds at most.`],
+  cap: ["No test emails left today", `At most ${DAILY_CAP} test emails a day.`],
+  config: ["Not set up yet", "Add the environment variables in the checklist below, then redeploy."],
+  noto: ["Send to whom?", "Enter a recipient email first."],
+  bad: ["That email doesn't look right", "Check for extra spaces or a missing @."],
+  nocode: ["You can only send to yourself", "To send to other addresses, set a test code EMAIL_TEST_CODE in Vercel, then redeploy."],
+  code: ["Wrong test code", "Sending to other addresses needs the correct test code."],
+  fail: ["❌ Sending failed", ""],
 };
 
 export default async function EmailTestPage({ searchParams }: { searchParams: Promise<{ r?: string; e?: string }> }) {
@@ -90,10 +90,10 @@ export default async function EmailTestPage({ searchParams }: { searchParams: Pr
   const owner = process.env.EMAIL_TEST_TO ?? "";
   const hasCode = Boolean(process.env.EMAIL_TEST_CODE);
   const checks: [string, boolean, string][] = [
-    ["RESEND_API_KEY", Boolean(process.env.RESEND_API_KEY), "Resend 的发信密钥（只放在 Vercel，别发给任何人）"],
-    ["EMAIL_FROM", Boolean(from), from || "发件人，比如 我的小店 <hello@mail.你的域名.com>"],
-    ["EMAIL_TEST_TO", Boolean(owner), owner ? `${maskEmail(owner)}（不填收件人时发到这里）` : "可选：你自己的邮箱，不填收件人时发到这里"],
-    ["EMAIL_TEST_CODE", hasCode, hasCode ? (owner ? "已设置：发给其他邮箱要输入它" : "已设置：发邮件要输入它") : "可选：设置后才能发给其他邮箱"],
+    ["RESEND_API_KEY", Boolean(process.env.RESEND_API_KEY), "Resend sending key (only in Vercel, never share it)"],
+    ["EMAIL_FROM", Boolean(from), from || "Sender, e.g. My Shop <hello@mail.example.com>"],
+    ["EMAIL_TEST_TO", Boolean(owner), owner ? `${maskEmail(owner)} (used when no recipient is entered)` : "Optional: your own email, used when no recipient is entered"],
+    ["EMAIL_TEST_CODE", hasCode, hasCode ? (owner ? "Set: needed to send to other addresses" : "Set: needed to send") : "Optional: set it to send to other addresses"],
   ];
 
   const log = isDbConfigured()
@@ -111,8 +111,8 @@ export default async function EmailTestPage({ searchParams }: { searchParams: Pr
     <main className="mx-auto flex max-w-2xl flex-col gap-8 px-5 py-16">
       <header className="flex flex-col gap-3">
         <span className="w-fit rounded-full border border-line px-3 py-1 text-xs text-muted">email-send</span>
-        <h1 className="text-3xl font-black">邮件测试</h1>
-        <p className="text-muted">填一个邮箱，网站会用你自己的域名给它发一封测试邮件。{owner ? "不填就发给你自己。" : ""}</p>
+        <h1 className="text-3xl font-black">Email test</h1>
+        <p className="text-muted">Enter an email address and the site will send it a test email from your own domain.{owner ? " Leave it empty to send to yourself." : ""}</p>
       </header>
 
       <section className="rounded-2xl border border-line">
@@ -134,19 +134,19 @@ export default async function EmailTestPage({ searchParams }: { searchParams: Pr
 
       <form action={sendTest} className="flex flex-col gap-4">
         <label className="flex flex-col gap-2">
-          <span className="text-sm font-bold">收件人</span>
+          <span className="text-sm font-bold">Recipient</span>
           <input
             name="to"
             type="email"
             autoComplete="off"
-            placeholder={owner ? `不填就发给 ${maskEmail(owner)}` : "name@example.com"}
+            placeholder={owner ? `Empty sends to ${maskEmail(owner)}` : "name@example.com"}
             required={!owner}
             className="rounded-xl border border-line bg-transparent px-4 py-3"
           />
         </label>
         {hasCode && (
           <label className="flex flex-col gap-2">
-            <span className="text-sm font-bold">测试口令 <span className="font-normal text-muted">{owner ? "（发给别的邮箱时才需要）" : ""}</span></span>
+            <span className="text-sm font-bold">Test code <span className="font-normal text-muted">{owner ? "(only needed for other addresses)" : ""}</span></span>
             <input
               name="code"
               type="password"
@@ -160,16 +160,16 @@ export default async function EmailTestPage({ searchParams }: { searchParams: Pr
           disabled={!ready}
           className="w-fit rounded-full bg-accent px-6 py-3 font-bold text-white transition active:scale-95 disabled:opacity-40"
         >
-          发一封测试邮件
+          Send a test email
         </button>
         <p className="text-xs text-muted">
-          为了防止别人借你的域名乱发邮件：{owner ? "发给自己以外的邮箱" : "发邮件"}需要测试口令；每 {COOLDOWN_S} 秒最多 1 封、每天最多 {DAILY_CAP} 封；邮件内容固定，不能自定义。
+          So nobody can use your domain to send spam: {owner ? "sending to anyone but you" : "sending"} needs the test code; at most 1 email every {COOLDOWN_S} seconds and {DAILY_CAP} a day; the content is fixed.
         </p>
       </form>
 
       {log.length > 0 && (
         <section className="rounded-2xl border border-line p-5">
-          <h2 className="mb-3 font-bold">最近发送</h2>
+          <h2 className="mb-3 font-bold">Recently sent</h2>
           <ol className="flex flex-col divide-y divide-line">
             {log.map((row) => {
               const p = row.payload as { to?: string[]; tag?: string };
@@ -179,7 +179,7 @@ export default async function EmailTestPage({ searchParams }: { searchParams: Pr
                     {row.type === "email.sent" ? "✅" : "❌"} {p.to?.join(", ")} <span className="text-muted">· {p.tag ?? "—"}</span>
                   </span>
                   <time className="shrink-0 tabular-nums text-muted">
-                    {row.createdAt.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai", hour12: false })}
+                    {row.createdAt.toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" })} UTC
                   </time>
                 </li>
               );

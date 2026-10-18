@@ -15,15 +15,15 @@ export default function SecretMaker() {
   }
   return (
     <section className="flex flex-col gap-3 rounded-2xl border border-line p-5">
-      <h2 className="font-bold">生成 BETTER_AUTH_SECRET</h2>
-      <p className="text-sm text-muted">在你自己的浏览器里随机生成，不会发到任何地方。复制后粘贴到 Vercel，打开 Sensitive，然后重新部署。别发给任何人，包括 AI。</p>
+      <h2 className="font-bold">Generate BETTER_AUTH_SECRET</h2>
+      <p className="text-sm text-muted">Made randomly in your own browser and never sent anywhere. Copy it, paste it into Vercel, turn on Sensitive, then redeploy. Don't send it to anyone, including your AI.</p>
       {secret ? (
         <>
           <code className="break-all rounded-xl border border-line p-3 text-sm select-all">{secret}</code>
-          <button type="button" onClick={copy} className="w-fit rounded-full bg-accent px-5 py-2 font-bold text-white">{copied ? "已复制" : "复制"}</button>
+          <button type="button" onClick={copy} className="w-fit rounded-full bg-accent px-5 py-2 font-bold text-white">{copied ? "Copied" : "Copy"}</button>
         </>
       ) : (
-        <button type="button" onClick={make} className="w-fit rounded-full bg-accent px-5 py-2 font-bold text-white">生成一个</button>
+        <button type="button" onClick={make} className="w-fit rounded-full bg-accent px-5 py-2 font-bold text-white">Generate</button>
       )}
     </section>
   );

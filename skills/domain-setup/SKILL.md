@@ -1,6 +1,6 @@
 ---
 name: domain-setup
-description: Point the user's own domain (or a subdomain like shop.example.com) at their Vercel site with automatic HTTPS, at any registrar (Cloudflare, Namecheap, GoDaddy, Aliyun...), then verify it. Use when the user says "绑定域名", "用我自己的网址", "connect my domain", or a later skill (email-send) requires a domain.
+description: Point the user's own domain (or a subdomain like shop.example.com) at their Vercel site with automatic HTTPS, at any registrar (Cloudflare, Namecheap, GoDaddy, Aliyun...), then verify it. Use when the user says "connect my domain", "use my own URL", or a later skill (email-send) requires a domain.
 license: MIT
 metadata:
   version: "1.0.0"

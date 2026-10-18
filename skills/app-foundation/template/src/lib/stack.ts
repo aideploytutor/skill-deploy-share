@@ -5,11 +5,11 @@ export type StackInfo = typeof stack;
 
 /** Skills that build on this foundation, in the order the series introduces them. */
 export const NEXT_STEPS = [
-  { skill: "db-connect", episode: "003", label: "数据库", hint: "让网站能存东西" },
-  { skill: "domain-setup", episode: "004", label: "域名", hint: "绑定你自己的网址" },
-  { skill: "email-send", episode: "005", label: "发邮件", hint: "验证码、通知" },
-  { skill: "auth-login", episode: "006", label: "登录", hint: "Google 和邮箱验证码登录" },
-  { skill: "pay-checkout", episode: "011", label: "收款", hint: "接上付款按钮" },
+  { skill: "db-connect", episode: "003", label: "Database", hint: "Let your site save data" },
+  { skill: "domain-setup", episode: "004", label: "Domain", hint: "Use your own web address" },
+  { skill: "email-send", episode: "005", label: "Email", hint: "Sign-in codes, notifications" },
+  { skill: "auth-login", episode: "006", label: "Sign-in", hint: "Google and email-code sign-in" },
+  { skill: "pay-checkout", episode: "011", label: "Payments", hint: "Add a pay button" },
 ] as const;
 
 export function getStackStatus() {

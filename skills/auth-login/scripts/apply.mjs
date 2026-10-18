@@ -11,12 +11,13 @@
  * Then generates the database migration if dependencies are installed (npm run db:generate).
  * It never touches secrets: BETTER_AUTH_SECRET and GOOGLE_CLIENT_SECRET are set by the owner in Vercel.
  */
+import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
-const VERSION = "1.0.0";
+const VERSION = "1.1.0";
 const BETTER_AUTH = "^1.7.8";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const FILES = path.join(here, "..", "files");
@@ -33,6 +34,17 @@ const NEW_FILES = [
   "src/app/privacy/page.tsx",
 ];
 
+// Earlier versions of our own files: replaced on upgrade only if the owner never edited them.
+const PREVIOUS = {
+  "src/lib/auth.ts": ["33b62ffb21f70c93d4a62ad17db1cf3414ef4b0eeb1aee600c3706746f9dabb6"], // 1.0.0
+  "src/app/login/page.tsx": ["b286cb90276ec0de7e56702850f6172d957cc3229da2c00ccac49272018e770d"], // 1.0.0
+  "src/app/login/login-form.tsx": ["9d7ba58ef34e06c1c8abb2065ec0d84201351c41dde10528a78d7c9fd4b04977"], // 1.0.0
+  "src/app/login/secret-maker.tsx": ["0d11a2886a34bf9174b1a38aa9382e02c1ef77bf20a749d36b4aeed90c5b14c6"], // 1.0.0
+  "src/app/account/page.tsx": ["750d0c102bfb00828ef091ac6fcaeebcf7c15201c2cfd09bbcf84b095aa8d45e"], // 1.0.0
+  "src/app/account/sign-out.tsx": ["af4b333f2520638ff413a580a0f4ab658c010e0e80c58d6eb3324e52b594d114"], // 1.0.0
+  "src/app/privacy/page.tsx": ["60ebe1b80fc487748f27e800c36dff5d943d670423fe5e39fa6c725f1304815e"], // 1.0.0
+};
+
 const opts = { json: false, check: false, git: true, generate: true };
 const argv = process.argv.slice(2);
 for (let i = 0; i < argv.length; i++) {
@@ -48,6 +60,8 @@ for (let i = 0; i < argv.length; i++) {
 
 const log = (...m) => (opts.json ? console.error(...m) : console.log(...m));
 const result = { ok: false, skill: "auth-login", version: VERSION, changed: [], skipped: [], warnings: [], manual: [] };
+const sha = (f) => crypto.createHash("sha256").update(fs.readFileSync(f)).digest("hex");
+
 function write(dir, rel, content) {
   if (!opts.check) {
     const to = path.join(dir, rel);
@@ -73,7 +87,9 @@ try {
     const src = fs.readFileSync(path.join(FILES, rel), "utf8");
     const to = path.join(dir, rel);
     if (!fs.existsSync(to)) write(dir, rel, src);
-    else if (fs.readFileSync(to, "utf8") !== src) result.skipped.push(`${rel} (exists, kept yours)`);
+    else if (fs.readFileSync(to, "utf8") === src) continue;
+    else if ((PREVIOUS[rel] || []).includes(sha(to))) write(dir, rel, src);
+    else result.skipped.push(`${rel} (exists, kept yours)`);
   }
   if (!fs.existsSync(path.join(dir, "src/lib/email.ts"))) {
     // auth.ts imports sendEmail; give Google-only projects a stub that reports "not configured".
@@ -134,7 +150,7 @@ try {
 
   result.ok = true;
   result.next = [
-    "Owner: open /login after deploying → 生成 BETTER_AUTH_SECRET → paste into Vercel (Sensitive)",
+    "Owner: open /login after deploying → Generate BETTER_AUTH_SECRET → paste into Vercel (Sensitive)",
     "Owner: Google Cloud → OAuth client (Web) with redirect URI https://<domain>/api/auth/callback/google → GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET into Vercel",
     "Redeploy, open /login, try both ways, then /account",
   ];

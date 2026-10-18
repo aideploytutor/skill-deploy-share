@@ -1,39 +1,39 @@
-# db-connect（第 003 期）
+# db-connect (episode 003)
 
-给你的网站接上一个免费数据库，让它真正能存东西。没人访问时数据库也不会被停掉；以后想换数据库供应商，只需要改一行配置。
+Connect a free database so your site can actually save things. It isn't shut down when nobody visits, and moving to another provider later is a one-line config change.
 
-## 对 AI 说
+## Tell your AI
 
-> 用 db-connect 给我的项目连上一个免费数据库
+> Use db-connect to connect a free database to my project
 
-AI 会先改好代码，再带你在 Vercel 后台点几下创建数据库，最后部署并验证。
+The AI updates the code first, walks you through a few clicks in the Vercel dashboard to create the database, then deploys and checks it.
 
-## 为什么选 Neon
+## Why Neon
 
-| | Neon（默认） | Supabase |
+| | Neon (default) | Supabase |
 |---|---|---|
-| 免费版闲置时 | 5 分钟后自动休眠，有人访问就自动唤醒 | **连续 7 天没人访问，项目会被暂停** |
-| 免费存储 | 每个项目 1GB | 500MB |
-| 创建方式 | 在 Vercel 后台直接创建，不用另外注册 | 需要另外注册 |
+| Free plan when idle | Sleeps after 5 minutes, wakes on the next visit | **Project is paused after 7 days without activity** |
+| Free storage | 1 GB per project | 500 MB |
+| How to create it | Right in the Vercel dashboard, no separate sign-up | Separate sign-up |
 
-两者都是标准 Postgres 数据库，以后可以随时搬家。免费额度会变，以官网为准，核实记录见 [STACK.md](../../STACK.md)。
+Both are standard Postgres, so you can move any time. Free tiers change; check the official pages. Our verification log is in [STACK.md](../../STACK.md).
 
-## 你需要亲手做的
+## What you do yourself
 
-- 在 Vercel 后台 Storage 页点 **Create Database → Neon → Free**，接受条款（这一步会顺带创建你的 Neon 账号）
-- 数据库密码永远不用复制到聊天里，Vercel 会自动把它配置进项目
+- In Vercel → Storage, click **Create Database → Neon → Free** and accept the terms (this also creates your Neon account)
+- You never copy the database password into a chat; Vercel adds it to the project for you
 
-## 装好后你会得到
+## What you get
 
-- 每次部署前自动建表、更新表结构（`scripts/db-migrate.mjs`）。如果出错，部署会停下来，有问题的版本不会上线
-- `/api/health` 和 `/status` 页面能看到数据库连接状态和响应速度
-- `/db-test` 测试页：点一下存一条数据，刷新后还在，就说明数据库连通了（最多只保留 20 条，不会被人刷爆）
+- Tables are created and updated before every deploy (`scripts/db-migrate.mjs`). If that fails, the deploy stops and the broken version never goes live
+- `/api/health` and `/status` show the database connection and response time
+- A `/db-test` page: click to save a row, refresh, and it's still there. It keeps at most 20 rows, so nobody can flood it
 
-## 直接当命令行工具用
+## Run it as a command-line tool
 
 ```bash
-node scripts/apply.mjs --dir ./my-shop --check   # 只看会改哪些文件
-node scripts/apply.mjs --dir ./my-shop           # 应用改动（重复运行也安全）
+node scripts/apply.mjs --dir ./my-shop --check   # show which files would change
+node scripts/apply.mjs --dir ./my-shop           # apply (safe to run twice)
 ```
 
-如果你改过 `/api/health` 或 `/status` 页面，脚本不会覆盖它们，会提示你手动合并。
+If you've edited `/api/health` or `/status`, the script won't overwrite them and tells you to merge by hand.

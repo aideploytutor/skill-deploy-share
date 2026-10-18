@@ -6,7 +6,7 @@ import { emitEvent } from "@/lib/events";
  * Uses Resend's plain HTTP API (no SDK), so it runs on Vercel and Cloudflare alike.
  * Swapping provider later means changing this one file.
  *
- *   const r = await sendEmail({ to: "a@b.com", subject: "你好", html: "<p>…</p>" });
+ *   const r = await sendEmail({ to: "a@b.com", subject: "Hello", html: "<p>…</p>" });
  *   if (!r.ok) console.error(r.error);
  */
 export type EmailInput = {

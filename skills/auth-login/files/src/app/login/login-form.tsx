@@ -6,9 +6,9 @@ import { authClient } from "@/lib/auth-client";
 const COOLDOWN = 60; // seconds before another code can be sent (the server enforces it too)
 
 const MESSAGES: Record<string, string> = {
-  INVALID_OTP: "验证码不对，检查一下再输入。",
-  OTP_EXPIRED: "验证码过期了，重新获取一个。",
-  TOO_MANY_ATTEMPTS: "输错太多次，重新获取一个验证码。",
+  INVALID_OTP: "That code is wrong. Check it and try again.",
+  OTP_EXPIRED: "That code has expired. Request a new one.",
+  TOO_MANY_ATTEMPTS: "Too many wrong tries. Request a new code.",
 };
 
 export default function LoginForm({ next, google, email }: { next: string; google: boolean; email: boolean }) {
@@ -28,8 +28,8 @@ export default function LoginForm({ next, google, email }: { next: string; googl
 
   function explain(err: { code?: string; status?: number; message?: string } | null) {
     if (!err) return "";
-    if (err.status === 429) return "操作太频繁了，等一分钟再试。";
-    return ((err.code && MESSAGES[err.code]) || err.message || "出了点问题，请再试一次。") + (err.code ? `（${err.code}）` : "");
+    if (err.status === 429) return "Too many requests. Wait a minute and try again.";
+    return ((err.code && MESSAGES[err.code]) || err.message || "Something went wrong. Please try again.") + (err.code ? ` (${err.code})` : "");
   }
 
   async function sendCode(e?: React.FormEvent) {
@@ -42,7 +42,7 @@ export default function LoginForm({ next, google, email }: { next: string; googl
     setStep("code");
     setCode("");
     setWait(COOLDOWN);
-    setMsg(`验证码已发到 ${address.trim()}，5 分钟内有效。没收到就看看垃圾箱。`);
+    setMsg(`Code sent to ${address.trim()}. It works for 5 minutes. Not there? Check your spam folder.`);
   }
 
   async function verify(e: React.FormEvent) {
@@ -75,33 +75,33 @@ export default function LoginForm({ next, google, email }: { next: string; googl
             <path fill="#FBBC05" d="M10.5 28.7c-.5-1.4-.8-3-.8-4.7s.3-3.2.8-4.7l-7.8-6C1 16.6 0 20.2 0 24s1 7.4 2.7 10.7l7.8-6z"/>
             <path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.4-5.7c-2.1 1.4-4.8 2.3-8.5 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.8 6C6.6 42.6 14.6 48 24 48z"/>
           </svg>
-          用 Google 登录
+          Continue with Google
         </button>
       )}
       {google && email && (
-        <div className="flex items-center gap-3 text-sm text-muted"><span className="h-px flex-1 bg-line" />或者用邮箱<span className="h-px flex-1 bg-line" /></div>
+        <div className="flex items-center gap-3 text-sm text-muted"><span className="h-px flex-1 bg-line" />or use email<span className="h-px flex-1 bg-line" /></div>
       )}
       {email && step === "email" && (
         <form onSubmit={sendCode} className="flex flex-col gap-3">
-          <label htmlFor="login-email" className="text-sm font-bold">邮箱</label>
+          <label htmlFor="login-email" className="text-sm font-bold">Email</label>
           <input id="login-email" type="email" required autoComplete="email" value={address}
             onChange={(e) => setAddress(e.target.value)} placeholder="name@example.com" className={input} />
-          <button type="submit" disabled={busy || wait > 0} className={primary}>{busy ? "发送中…" : wait > 0 ? `${wait} 秒后可重新发送` : "发送验证码"}</button>
+          <button type="submit" disabled={busy || wait > 0} className={primary}>{busy ? "Sending…" : wait > 0 ? `Resend in ${wait}s` : "Send code"}</button>
         </form>
       )}
       {email && step === "code" && (
         <form onSubmit={verify} className="flex flex-col gap-3">
-          <label htmlFor="login-code" className="text-sm font-bold">6 位验证码</label>
+          <label htmlFor="login-code" className="text-sm font-bold">6-digit code</label>
           <input id="login-code" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} required
             value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
             className={`${input} text-center text-2xl font-black tracking-[0.5em] tabular-nums`} />
-          <button type="submit" disabled={busy || code.length !== 6} className={primary}>{busy ? "登录中…" : "登录"}</button>
+          <button type="submit" disabled={busy || code.length !== 6} className={primary}>{busy ? "Signing in…" : "Sign in"}</button>
           <div className="flex justify-center gap-5 text-sm text-muted">
             <button type="button" onClick={() => sendCode()} disabled={busy || wait > 0} className="underline underline-offset-4 disabled:no-underline disabled:opacity-60">
-              {wait > 0 ? `${wait} 秒后可重新发送` : "重新发送验证码"}
+              {wait > 0 ? `Resend in ${wait}s` : "Resend code"}
             </button>
             <button type="button" onClick={() => { setStep("email"); setCode(""); setMsg(""); }} className="underline underline-offset-4">
-              换个邮箱
+              Use a different email
             </button>
           </div>
         </form>

@@ -1,9 +1,9 @@
 ---
 name: email-send
-description: Let an app-foundation site send email from the owner's own domain (Resend, free tier 3,000/month), with DNS checks so mail doesn't land in spam and a /email-test page. Use when the user says "让网站能发邮件", "发验证码邮件", "send email from my domain", "set up Resend", or a later skill (auth-login, pay-receipts) requires email-send.
+description: Let an app-foundation site send email from the owner's own domain (Resend, free tier 3,000/month), with DNS checks so mail doesn't land in spam and a /email-test page. Use when the user says "let my site send email", "send email from my domain", "set up Resend", or a later skill (auth-login, pay-receipts) requires email-send.
 license: MIT
 metadata:
-  version: "1.1.1"
+  version: "1.2.0"
   episode: "005"
   requires: "app-foundation, domain-setup (a domain you own); db-connect recommended"
   provides: "src/lib/email.ts sendEmail(); /email-test; email.sent / email.failed events; stack.json email"
@@ -32,7 +32,7 @@ Use a **subdomain**: Resend recommends it, and it keeps the root domain's own ma
 
 | Site | Sending domain | From |
 |---|---|---|
-| `shop.example.com` or `example.com` | `mail.example.com` | `我的小店 <hello@mail.example.com>` |
+| `shop.example.com` or `example.com` | `mail.example.com` | `My Shop <hello@mail.example.com>` |
 
 ### 2. Prepare the code
 
@@ -91,7 +91,7 @@ When it passes, click **Verify** in Resend (often verified within 15 minutes; DN
 | Name | Value | Secret? |
 |---|---|---|
 | `RESEND_API_KEY` | `re_...` | **yes**: owner only, mark Sensitive |
-| `EMAIL_FROM` | `我的小店 <hello@mail.example.com>` | no |
+| `EMAIL_FROM` | `My Shop <hello@mail.example.com>` | no |
 | `EMAIL_TEST_TO` | optional: the owner's inbox, used when the recipient field is left empty (and the only address allowed without the code). Leave it out to keep the owner's address off the public page | no |
 | `EMAIL_TEST_CODE` | optional test passphrase, needed to send to **other** addresses from /email-test | **yes**: owner only |
 
@@ -101,13 +101,13 @@ You may add the two non-secret ones yourself with the owner's OK.
 
 ### 6. Test
 
-Open `https://<domain>/email-test`, type any address (or leave it empty to use `EMAIL_TEST_TO`) → **发一封测试邮件**. The page is public, so sending to an address other than `EMAIL_TEST_TO` requires `EMAIL_TEST_CODE`; without that variable it can only email the owner. It always allows at most one email a minute and 10 a day, with fixed content, so strangers can't use the domain to send spam. Never put the address in the URL. After `auth-login` (episode 006), consider limiting this page to admins. Ask the owner whether the email arrived in the **inbox**, not spam. In Gmail → ⋮ → Show original, SPF, DKIM and DMARC should all show PASS.
+Open `https://<domain>/email-test`, type any address (or leave it empty to use `EMAIL_TEST_TO`) → **Send a test email**. The page is public, so sending to an address other than `EMAIL_TEST_TO` requires `EMAIL_TEST_CODE`; without that variable it can only email the owner. It always allows at most one email a minute and 10 a day, with fixed content, so strangers can't use the domain to send spam. Never put the address in the URL. After `auth-login` (episode 006), consider limiting this page to admins. Ask the owner whether the email arrived in the **inbox**, not spam. In Gmail → ⋮ → Show original, SPF, DKIM and DMARC should all show PASS.
 
 ## Using it in code
 
 ```ts
 import { sendEmail } from "@/lib/email";
-const r = await sendEmail({ to, subject: "你的验证码", text: `验证码：${code}`, tag: "login-code" });
+const r = await sendEmail({ to, subject: "Your sign-in code", text: `Your code is ${code}`, tag: "login-code" });
 if (!r.ok) /* show a friendly error; r.error has details */;
 ```
 

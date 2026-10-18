@@ -15,17 +15,23 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
-const VERSION = "1.0.0";
+const VERSION = "1.1.0";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const FILES = path.join(here, "..", "files");
 const FOUNDATION_TEMPLATE = path.join(here, "..", "..", "app-foundation", "template");
 
-// Files from app-foundation 1.0.0 that db-connect upgrades. Replaced only if untouched.
+// Files db-connect replaces on install or upgrade, with the hashes of every earlier version
+// we shipped (app-foundation originals and older db-connect copies). Replaced only if untouched.
 const UPGRADES = {
-  "src/app/api/health/route.ts": "ac02411224cccfac97f22f56a22d63905468f82e6c7ae2563a27ae63e514f5b1",
-  "src/app/status/page.tsx": "35ff613c59447a8372c9595e815c09b746b531741e209bc1395ecc0cf69623b3",
+  "src/app/api/health/route.ts": ["ac02411224cccfac97f22f56a22d63905468f82e6c7ae2563a27ae63e514f5b1"],
+  "src/app/status/page.tsx": [
+    "35ff613c59447a8372c9595e815c09b746b531741e209bc1395ecc0cf69623b3", // app-foundation 1.0.0–1.0.2
+    "0c16fd35440c97fb342f501c6d47d6252ae03ffc57f7141bcbc6ca4fd1339e68", // app-foundation 1.1.0 (English)
+    "555e0406fa15f3bd49015b8c09b154e1bf153da474f293b1ed6baf13b5fd571d", // db-connect 1.0.0
+  ],
+  "src/app/db-test/page.tsx": ["2ac1bfc87e4f2ce649abda3074ff03c67e303da20bd2cb982799a4238da418d4"], // db-connect 1.0.0
 };
-const NEW_FILES = ["scripts/db-migrate.mjs", "src/app/db-test/page.tsx"];
+const NEW_FILES = ["scripts/db-migrate.mjs"];
 
 const opts = { json: false, check: false, git: true };
 const argv = process.argv.slice(2);
@@ -74,13 +80,13 @@ try {
     if (!fs.existsSync(to)) write(dir, rel, src);
   }
 
-  // 2. Upgrades of foundation files: only when unchanged since app-foundation 1.0.0
-  for (const [rel, original] of Object.entries(UPGRADES)) {
+  // 2. Our files and upgraded foundation files: only when unchanged since a version we shipped
+  for (const [rel, known] of Object.entries(UPGRADES)) {
     const to = path.join(dir, rel);
     const src = fs.readFileSync(path.join(FILES, rel), "utf8");
     if (!fs.existsSync(to)) { write(dir, rel, src); continue; }
     if (fs.readFileSync(to, "utf8") === src) continue; // already applied
-    if (sha(to) === original) write(dir, rel, src);
+    if (known.includes(sha(to))) write(dir, rel, src);
     else result.manual.push(`${rel}: you changed this file, so it was not replaced. Merge in the database check from ${path.join(FILES, rel)}`);
   }
 

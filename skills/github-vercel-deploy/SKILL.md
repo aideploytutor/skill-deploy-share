@@ -1,9 +1,9 @@
 ---
 name: github-vercel-deploy
-description: Deploy a local project folder from scratch to a new GitHub repo and connect it to Vercel so every push auto-deploys. Use when the user says "deploy to GitHub and Vercel", "put this project online", "ship this to Vercel", or "部署到 GitHub 和 Vercel / 把这个项目上线".
+description: Deploy a local project folder from scratch to a new GitHub repo and connect it to Vercel so every push auto-deploys. Use when the user says "deploy to GitHub and Vercel", "put this project online", "ship this to Vercel", or wants auto-deploy on push.
 license: MIT
 metadata:
-  version: "2.0.0"
+  version: "2.1.0"
   requires: "git, Node.js 18+, GITHUB_TOKEN, VERCEL_TOKEN (CLI mode) or a browser tool (browser mode)"
 ---
 

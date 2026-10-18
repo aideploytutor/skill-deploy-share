@@ -11,19 +11,19 @@ export default function Home() {
     <main className="mx-auto flex max-w-2xl flex-col gap-10 px-5 py-16 sm:py-24">
       <header className="flex flex-col gap-4">
         <span className="w-fit rounded-full border border-line px-3 py-1 text-xs text-muted">
-          底座已就绪 · app-foundation
+          Foundation ready · app-foundation
         </span>
         <h1 className="text-4xl font-black tracking-tight sm:text-6xl">{siteName}</h1>
         <p className="text-lg text-muted">
-          这是你的产品底座。接下来让 AI 在上面一层层加功能：数据库、登录、收款、订单……
-          每一步都是一句话。
+          This is your product foundation. Next, have your AI add features on top, one layer at a time: database, sign-in, payments, orders…
+          Each step is one sentence.
         </p>
       </header>
 
       <section className="rounded-2xl border border-line p-5 sm:p-6" aria-labelledby="next">
         <div className="mb-4 flex items-baseline justify-between gap-4">
-          <h2 id="next" className="text-lg font-bold">接下来</h2>
-          <span className="text-sm tabular-nums text-muted">{done}/{status.steps.length} 已完成</span>
+          <h2 id="next" className="text-lg font-bold">Next steps</h2>
+          <span className="text-sm tabular-nums text-muted">{done}/{status.steps.length} done</span>
         </div>
         <ol className="flex flex-col divide-y divide-line">
           {status.steps.map((s) => (
@@ -47,8 +47,8 @@ export default function Home() {
       </section>
 
       <footer className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted">
-        <Link className="underline underline-offset-4" href="/status">底座状态</Link>
-        <Link className="underline underline-offset-4" href="/api/health">健康检查</Link>
+        <Link className="underline underline-offset-4" href="/status">Foundation status</Link>
+        <Link className="underline underline-offset-4" href="/api/health">Health check</Link>
         <a className="underline underline-offset-4" href="https://github.com/aideploytutor/skill-deploy-share">
           skill-deploy-share
         </a>

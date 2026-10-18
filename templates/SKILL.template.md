@@ -4,9 +4,9 @@ description: One sentence on what it does and exactly when to use it (include tr
 license: MIT
 metadata:
   version: "1.0.0"
-  episode: "000"               # 对应小红书第几期
-  requires: "app-foundation"   # 必须先装的 Skill，逗号分隔；没有就留空
-  provides: "orders_* tables, /orders page"  # 装完新增了什么
+  episode: "000"               # which episode of the series
+  requires: "app-foundation"   # skills that must be installed first, comma-separated; empty if none
+  provides: "orders_* tables, /orders page"  # what installing it adds
 ---
 
 # Title

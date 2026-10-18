@@ -2,8 +2,8 @@
 /**
  * app-foundation — create a new project from the foundation template.
  *
- *   node create.mjs --dir ./my-shop --name "我的小店"        create + npm install + git init
- *   node create.mjs --dir ./my-shop --name "我的小店" --no-install
+ *   node create.mjs --dir ./my-shop --name "My Shop"        create + npm install + git init
+ *   node create.mjs --dir ./my-shop --name "My Shop" --no-install
  *   node create.mjs --check --dir ./my-shop                    verify an existing project
  *   node create.mjs --json ...                                  machine-readable result
  *
@@ -14,7 +14,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const VERSION = "1.0.2";
+const VERSION = "1.1.0";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const TEMPLATE = path.join(here, "..", "template");
 
