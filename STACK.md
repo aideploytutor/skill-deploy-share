@@ -16,7 +16,7 @@ The goal of this repo: **one skill per episode, each one installs a mature syste
 | Database | Postgres on Neon | Supabase / any Postgres | The free plan sleeps when idle but is never paused |
 | Database access | Drizzle ORM | — | Close to plain SQL, unaffected by a provider change |
 | Sign-in | Better Auth | any OAuth solution | Users live in your own database, no monthly-active-user cap |
-| File storage | Cloudflare R2 (S3 API) | AWS S3 / Supabase Storage | Standard S3 API |
+| File storage | Vercel Blob | Cloudflare R2 / any S3 API | No card needed to start; all storage code sits in one file, so it can move to R2 (10 GB free) |
 | Payments | Stripe | Lemon Squeezy / Paddle | No monthly fee, pay per transaction |
 | Email | Resend | any SMTP service | Free tier is enough to start |
 | Hosting (not charging yet) | Vercel Hobby | Cloudflare | Easiest deploys |
@@ -33,6 +33,8 @@ Re-check the official pages and update this table before each new skill ships.
 | Neon | 1 GB storage and 100 CU-hours per project, up to 100 projects | Sleeps after 5 minutes idle, wakes on the next request | [Pricing](https://neon.com/pricing) |
 | Supabase | 500 MB database, 50k MAU, 1 GB storage, up to 2 projects | **Projects are paused after 7 days without activity** | [Pricing](https://supabase.com/pricing) |
 | Resend | 3,000 emails a month, max 100 a day, 3 domains | Paid from $20/month; without a verified domain you can only email yourself (re-checked 2026-10-14) | [Pricing](https://resend.com/pricing) |
+| Vercel Blob (Hobby) | 1 GB storage, 10 GB downloads, 2,000 uploads a month | Over the limit it pauses for the rest of 30 days, never charges (checked 2026-10-18) | [Pricing](https://vercel.com/docs/vercel-blob/usage-and-pricing) |
+| Cloudflare R2 | 10 GB storage, 1M writes and 10M reads a month, free downloads | A payment method is required to enable R2 | [Pricing](https://developers.cloudflare.com/r2/pricing/) |
 | Stripe | No monthly fee | US cards: 2.9% + 30¢ per charge; international cards +1.5% | [Pricing](https://stripe.com/pricing) |
 
 ## 4. Conventions every skill follows
