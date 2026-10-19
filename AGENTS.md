@@ -23,6 +23,7 @@ When a user request matches a skill's `description`:
 | [email-send](skills/email-send/SKILL.md) | The user wants the site to send email (login codes, receipts) from their own domain, or another skill requires `email-send`. Example phrasings: "let my site send email", "send login codes by email". |
 | [auth-login](skills/auth-login/SKILL.md) | The user wants sign-in (Google, email code) on the site, or another skill requires `auth-login`. Example phrasings: "add login", "sign in with Google", "email code sign-in". |
 | [env-secrets](skills/env-secrets/SKILL.md) | The user leaked or pasted an API key, wants to check the project for secrets, or is about to make a repo public. Example phrasings: "check for leaked keys", "I pasted my API key, what now?". |
+| [file-upload](skills/file-upload/SKILL.md) | The user wants users to upload images/files, uploads vanish or fail after deploying, or another skill requires `file-upload`. Example phrasings: "add file upload", "let users upload photos", "upload works locally but not on Vercel". |
 
 ## Shared conventions
 Every skill must follow `STACK.md` (shared stack, table prefixes, env var names, requires/provides metadata). The full plan is in `ROADMAP.md`.

@@ -14,7 +14,7 @@
 | 005 | ✅ [email-send](skills/email-send/) | Send email from your site | domain-setup, app-foundation |
 | 006 | ✅ [auth-login](skills/auth-login/) | Sign in with Google or an email code | db-connect, email-send |
 | 007 | ✅ [env-secrets](skills/env-secrets/) | Keep API keys where they belong | — |
-| 008 | `file-upload` | Let users upload images and files | app-foundation |
+| 008 | ✅ [file-upload](skills/file-upload/) | Let users upload images and files | db-connect, auth-login |
 | 009 | `deploy-cloudflare` | Ready to charge? Move to hosting that allows commercial use | app-foundation |
 | 010 | `db-backup` | Back up the database every day | db-connect |
 
