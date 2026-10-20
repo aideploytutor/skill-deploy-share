@@ -17,7 +17,7 @@ The goal of this repo: **one skill per episode, each one installs a mature syste
 | Database access | Drizzle ORM | — | Close to plain SQL, unaffected by a provider change |
 | Sign-in | Better Auth | any OAuth solution | Users live in your own database, no monthly-active-user cap |
 | File storage | Vercel Blob | Cloudflare R2 / any S3 API | No card needed to start; all storage code sits in one file, so it can move to R2 (10 GB free) |
-| Payments | Stripe | Lemon Squeezy / Paddle | No monthly fee, pay per transaction |
+| Payments | Creem (merchant of record) | Stripe / Lemon Squeezy / Paddle | No monthly fee; handles sales tax worldwide; pays out to mainland China banks, which Stripe doesn't |
 | Email | Resend | any SMTP service | Free tier is enough to start |
 | Hosting (not charging yet) | Vercel Hobby | Cloudflare | Easiest deploys |
 | Hosting (charging) | Cloudflare Workers (+ Hyperdrive) | Vercel Pro | Vercel's free plan is non-commercial only; Workers Free isn't restricted, Paid is $5/month |
