@@ -3,7 +3,7 @@ name: app-foundation
 description: Create a new web product foundation (Next.js + TypeScript + Tailwind + Postgres via Drizzle) that every other skill in skill-deploy-share builds on. Use when the user wants to start a new project, website, app, shop or SaaS from scratch, says "start a new project" or "set up a foundation for my shop", or another skill requires app-foundation.
 license: MIT
 metadata:
-  version: "1.1.0"
+  version: "1.1.1"
   episode: "002"
   requires: ""
   provides: "Next.js app, src/db (Drizzle + Postgres client), core_events table, emitEvent(), /api/health, /status, stack.json, project AGENTS.md"
