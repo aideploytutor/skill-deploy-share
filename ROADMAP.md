@@ -16,16 +16,16 @@
 | 007 | ✅ [env-secrets](skills/env-secrets/) | Keep API keys where they belong | — |
 | 008 | ✅ [file-upload](skills/file-upload/) | Let users upload images and files | db-connect, auth-login |
 | 009 | ✅ [deploy-cloudflare](skills/deploy-cloudflare/) | Ready to charge? Move to hosting that allows commercial use | app-foundation |
-| 010 | `db-backup` | Back up the database every day | db-connect |
+| 011 | `db-backup` | Back up the database every day | db-connect |
 
 ## Payments: the checkout every system shares
 
 | # | Skill | What it does | Requires |
 |---|---|---|---|
-| 011 | `pay-checkout` | Accept payments in one sentence | auth-login |
+| 010 | `pay-checkout` | Accept payments in one sentence (Creem, test mode first) | auth-login, deploy-cloudflare |
 | 012 | `pay-webhook` | Handle successful payments automatically, never miss one | pay-checkout |
 | 013 | `pay-subscription` | Monthly subscriptions | pay-webhook |
-| 014 | `pay-mor` | Don't want to deal with global sales tax? Use a merchant of record | auth-login |
+| 014 | `pay-stripe` | Have a US/HK company? Take payments with Stripe instead | auth-login |
 | 015 | `pay-cn-guide` | Taking payments from customers in China | — |
 | 016 | `pay-coupons` | Promo codes and free trials | pay-checkout |
 | 017 | `pay-receipts` | Send a receipt after every payment | pay-webhook, email-send |

@@ -25,6 +25,7 @@ When a user request matches a skill's `description`:
 | [env-secrets](skills/env-secrets/SKILL.md) | The user leaked or pasted an API key, wants to check the project for secrets, or is about to make a repo public. Example phrasings: "check for leaked keys", "I pasted my API key, what now?". |
 | [file-upload](skills/file-upload/SKILL.md) | The user wants users to upload images/files, uploads vanish or fail after deploying, or another skill requires `file-upload`. Example phrasings: "add file upload", "let users upload photos", "upload works locally but not on Vercel". |
 | [deploy-cloudflare](skills/deploy-cloudflare/SKILL.md) | The user wants to charge money / take payments on a Vercel Hobby project, wants to deploy to Cloudflare, or move off Vercel. Example phrasings: "I want to start charging", "deploy to Cloudflare", "Vercel free plan doesn't allow commercial use". |
+| [pay-checkout](skills/pay-checkout/SKILL.md) | The user wants the site to take payments / add a buy button, or a later skill requires `pay-checkout`. Example phrasings: "let my site take payments", "add a pay button", "start charging". |
 
 ## Shared conventions
 Every skill must follow `STACK.md` (shared stack, table prefixes, env var names, requires/provides metadata). The full plan is in `ROADMAP.md`.
