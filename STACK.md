@@ -20,7 +20,7 @@ The goal of this repo: **one skill per episode, each one installs a mature syste
 | Payments | Stripe | Lemon Squeezy / Paddle | No monthly fee, pay per transaction |
 | Email | Resend | any SMTP service | Free tier is enough to start |
 | Hosting (not charging yet) | Vercel Hobby | Cloudflare | Easiest deploys |
-| Hosting (charging) | Cloudflare Workers | Vercel Pro | Vercel's free plan is non-commercial only |
+| Hosting (charging) | Cloudflare Workers (+ Hyperdrive) | Vercel Pro | Vercel's free plan is non-commercial only; Workers Free isn't restricted, Paid is $5/month |
 
 ## 3. Verified free tiers (2026-10-12)
 
@@ -29,7 +29,8 @@ Re-check the official pages and update this table before each new skill ships.
 | Service | Free tier | Watch out for | Source |
 |---|---|---|---|
 | Vercel Hobby | 100 GB bandwidth and 1M function invocations a month | **Non-commercial use only**: payments, ads and client work all count as commercial | [Fair Use](https://vercel.com/docs/limits/fair-use-guidelines) |
-| Cloudflare Workers | 100k requests a day, up to 10 ms CPU each | Paid plan from $5/month; the pricing page doesn't prohibit commercial use | [Pricing](https://developers.cloudflare.com/workers/platform/pricing/) |
+| Cloudflare Workers | 100k requests a day, 10 ms CPU per request (documented), 64 MiB worker | Our Next.js demo used ~66 ms CPU per request and wasn't cut off, but that isn't guaranteed; Paid is $5/month. Commercial use isn't restricted (re-checked 2026-10-19) | [Limits](https://developers.cloudflare.com/workers/platform/limits/) |
+| Cloudflare Hyperdrive | 100k database queries a day on Workers Free | Turn query caching off for apps with sign-in | [Pricing](https://developers.cloudflare.com/hyperdrive/platform/pricing/) |
 | Neon | 1 GB storage and 100 CU-hours per project, up to 100 projects | Sleeps after 5 minutes idle, wakes on the next request | [Pricing](https://neon.com/pricing) |
 | Supabase | 500 MB database, 50k MAU, 1 GB storage, up to 2 projects | **Projects are paused after 7 days without activity** | [Pricing](https://supabase.com/pricing) |
 | Resend | 3,000 emails a month, max 100 a day, 3 domains | Paid from $20/month; without a verified domain you can only email yourself (re-checked 2026-10-14) | [Pricing](https://resend.com/pricing) |

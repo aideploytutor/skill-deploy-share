@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { emailOTP } from "better-auth/plugins";
@@ -100,11 +101,15 @@ function createAuth() {
 }
 
 let cached: ReturnType<typeof createAuth> | null = null;
+// Cloudflare Workers can't reuse a database connection across requests, so there the
+// auth instance (which holds one) is made per request. Elsewhere one instance is kept.
+const onWorkers = typeof navigator !== "undefined" && navigator.userAgent === "Cloudflare-Workers";
+const perRequest = cache(createAuth);
 
 /** Created on first use, so `next build` works before the database or secrets exist. */
 export function getAuth() {
-  if (!cached) cached = createAuth();
-  return cached;
+  if (onWorkers) return perRequest();
+  return (cached ??= createAuth());
 }
 
 /** The signed-in user on the server, or null. */

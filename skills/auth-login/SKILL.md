@@ -3,7 +3,7 @@ name: auth-login
 description: Add user sign-in to an app-foundation site — "Sign in with Google" plus a 6-digit code by email — with Better Auth, users stored in the site's own Postgres (auth_* tables), no per-user fees. Use when the user says "add login", "sign in with Google", "email code login", or a later skill (orders, membership, admin) requires auth-login.
 license: MIT
 metadata:
-  version: "1.1.0"
+  version: "1.1.1"
   episode: "006"
   requires: "app-foundation, db-connect; email-send for email codes; domain-setup recommended"
   provides: "auth_users/auth_sessions/auth_accounts/auth_verifications/auth_rate_limits tables; /login, /account, /privacy, /api/auth/*; getAuth(), getCurrentUser(); auth.user_created event"

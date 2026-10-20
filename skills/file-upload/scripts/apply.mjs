@@ -20,7 +20,7 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
-const VERSION = "1.0.0";
+const VERSION = "1.0.1";
 const VERCEL_BLOB = "^2.8.0";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const FILES = path.join(here, "..", "files");
@@ -33,7 +33,9 @@ const NEW_FILES = [
   "src/app/files/actions.ts",
 ];
 // Earlier versions of our own files: replaced on upgrade only if the owner never edited them.
-const PREVIOUS = {};
+const PREVIOUS = {
+  "src/lib/storage.ts": ["96f7d9675fd35cbeb70356d5f2b64581485016ae044c26fca58f294e0d862b63"], // 1.0.0
+};
 
 const opts = { json: false, check: false, git: true, generate: true };
 const argv = process.argv.slice(2);

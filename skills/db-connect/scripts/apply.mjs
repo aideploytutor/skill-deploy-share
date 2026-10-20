@@ -15,7 +15,7 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
-const VERSION = "1.1.0";
+const VERSION = "1.1.1";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const FILES = path.join(here, "..", "files");
 const FOUNDATION_TEMPLATE = path.join(here, "..", "..", "app-foundation", "template");
@@ -23,7 +23,10 @@ const FOUNDATION_TEMPLATE = path.join(here, "..", "..", "app-foundation", "templ
 // Files db-connect replaces on install or upgrade, with the hashes of every earlier version
 // we shipped (app-foundation originals and older db-connect copies). Replaced only if untouched.
 const UPGRADES = {
-  "src/app/api/health/route.ts": ["ac02411224cccfac97f22f56a22d63905468f82e6c7ae2563a27ae63e514f5b1"],
+  "src/app/api/health/route.ts": [
+    "ac02411224cccfac97f22f56a22d63905468f82e6c7ae2563a27ae63e514f5b1", // app-foundation
+    "23928009ef8e9f24043b97c593236662daf015770dc468e9394674ebd6ca766f", // db-connect 1.0.0–1.1.0
+  ],
   "src/app/status/page.tsx": [
     "35ff613c59447a8372c9595e815c09b746b531741e209bc1395ecc0cf69623b3", // app-foundation 1.0.0–1.0.2
     "0c16fd35440c97fb342f501c6d47d6252ae03ffc57f7141bcbc6ca4fd1339e68", // app-foundation 1.1.0 (English)

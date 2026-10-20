@@ -11,7 +11,11 @@ async function checkDatabase() {
   try {
     await getDb().execute(sql`select 1`);
     return { status: "connected" as const, latencyMs: Date.now() - started };
-  } catch {
+  } catch (err) {
+    // Logged for the owner (Vercel/Cloudflare logs); connection details are masked.
+    const e = err as Error & { cause?: { message?: string; code?: string } };
+    const why = [e?.cause?.code, e?.cause?.message ?? e?.message ?? String(err)].filter(Boolean).join(" ");
+    console.error("[health] database check failed:", why.replace(/\/\/[^@\s]*@/g, "//***@"));
     return { status: "error" as const };
   }
 }

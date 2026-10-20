@@ -33,6 +33,7 @@ Whenever a step needs a sign-in or an approval, the AI stops and tells you what 
 | [auth-login](skills/auth-login/) | Sign in with Google or a 6-digit email code; users live in your own database, no per-user fees | [README](skills/auth-login/README.md) |
 | [env-secrets](skills/env-secrets/) | Keep API keys safe: scan for leaked keys, block commits that contain one, and replace a leaked key | [README](skills/env-secrets/README.md) |
 | [file-upload](skills/file-upload/) | Let signed-in users upload images and PDFs to Vercel Blob (free, no card); files survive every deploy | [README](skills/file-upload/README.md) |
+| [deploy-cloudflare](skills/deploy-cloudflare/) | Move off Vercel Hobby (non-commercial only) to Cloudflare Workers so the site can charge; GitHub auto-deploys, free Hyperdrive database pooling | [README](skills/deploy-cloudflare/README.md) |
 
 > When you add a skill, add a row here and in `AGENTS.md`.
 

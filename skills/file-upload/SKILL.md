@@ -3,7 +3,7 @@ name: file-upload
 description: Let signed-in users upload images and PDFs on an app-foundation site, stored in Vercel Blob (free 1 GB, no card) with the file list in Postgres, plus a /files page. Use when the user says "add file upload", "let users upload images/avatars/photos", "my uploads disappear after deploy", "upload works locally but fails on Vercel", or a later skill (shop products, reviews with photos) requires file-upload.
 license: MIT
 metadata:
-  version: "1.0.0"
+  version: "1.0.1"
   episode: "008"
   requires: "app-foundation, db-connect, auth-login"
   provides: "files_uploads table; src/lib/storage.ts (UPLOAD_LIMITS, recordUpload, listFiles, deleteFile, getUsage); /api/files/upload; /files page; files.uploaded and files.deleted events"

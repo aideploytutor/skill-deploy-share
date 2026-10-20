@@ -1,0 +1,16 @@
+// deploy-cloudflare (episode 009): how Cloudflare runs this site.
+// Secrets and settings are NOT kept here: add them in Cloudflare → Workers → this worker → Settings → Variables and Secrets.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "__NAME__",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2025-10-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": { "directory": ".open-next/assets", "binding": "ASSETS" },
+  "services": [{ "binding": "WORKER_SELF_REFERENCE", "service": "__NAME__" }],
+  "observability": { "enabled": true },
+  // Variables live in the dashboard; without keep_vars every deploy would delete the plain-text ones.
+  "keep_vars": true,
+  "workers_dev": true,
+  "preview_urls": false
+}

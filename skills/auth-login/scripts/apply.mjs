@@ -17,7 +17,7 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
-const VERSION = "1.1.0";
+const VERSION = "1.1.1";
 const BETTER_AUTH = "^1.7.8";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const FILES = path.join(here, "..", "files");
@@ -36,7 +36,7 @@ const NEW_FILES = [
 
 // Earlier versions of our own files: replaced on upgrade only if the owner never edited them.
 const PREVIOUS = {
-  "src/lib/auth.ts": ["33b62ffb21f70c93d4a62ad17db1cf3414ef4b0eeb1aee600c3706746f9dabb6"], // 1.0.0
+  "src/lib/auth.ts": ["33b62ffb21f70c93d4a62ad17db1cf3414ef4b0eeb1aee600c3706746f9dabb6", "d27b215c6230554b52d8be6c6027a1eb8deaf679bced9a2942e20df43f68e16d"], // 1.0.0, 1.1.0
   "src/app/login/page.tsx": ["b286cb90276ec0de7e56702850f6172d957cc3229da2c00ccac49272018e770d"], // 1.0.0
   "src/app/login/login-form.tsx": ["9d7ba58ef34e06c1c8abb2065ec0d84201351c41dde10528a78d7c9fd4b04977"], // 1.0.0
   "src/app/login/secret-maker.tsx": ["0d11a2886a34bf9174b1a38aa9382e02c1ef77bf20a749d36b4aeed90c5b14c6"], // 1.0.0

@@ -3,7 +3,7 @@ name: db-connect
 description: Connect a free Postgres database (Neon, created from the Vercel dashboard) to an app-foundation project so the site can save data; tables are created automatically on every deploy. Use when the user says "connect a database", "make my site save data", or another skill requires db-connect.
 license: MIT
 metadata:
-  version: "1.1.0"
+  version: "1.1.1"
   episode: "003"
   requires: "app-foundation"
   provides: "scripts/db-migrate.mjs (runs before every build), DB check in /api/health and /status, /db-test page, drizzle/ migrations"

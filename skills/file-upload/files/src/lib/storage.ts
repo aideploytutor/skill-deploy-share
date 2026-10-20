@@ -1,4 +1,3 @@
-import { del, head } from "@vercel/blob";
 import { and, count, desc, eq, sum } from "drizzle-orm";
 import { getDb } from "@/db";
 import { filesUploads } from "@/db/schema";
@@ -16,6 +15,33 @@ export const UPLOAD_LIMITS = {
   maxBytesPerUser: 25 * 1024 * 1024, // 25 MB per user
   types: ["image/jpeg", "image/png", "image/webp", "image/gif", "application/pdf"],
 };
+
+/**
+ * Minimal Vercel Blob server calls over plain fetch. The @vercel/blob server SDK uses a
+ * Node-only HTTP client that fails on Cloudflare Workers ("ALPNProtocols is not implemented").
+ */
+const BLOB_API = process.env.VERCEL_BLOB_API_URL || "https://vercel.com/api/blob";
+async function blobApi(path: string, init: RequestInit): Promise<Response> {
+  const token = process.env.BLOB_READ_WRITE_TOKEN ?? "";
+  const res = await fetch(`${BLOB_API}${path}`, {
+    ...init,
+    headers: {
+      authorization: `Bearer ${token}`,
+      "x-api-version": "12",
+      "x-vercel-blob-store-id": token.split("_")[3] ?? "",
+      ...(init.headers as Record<string, string> | undefined),
+    },
+  });
+  if (res.status === 404) throw new Error("That file doesn't exist in storage.");
+  if (!res.ok) throw new Error(`Storage request failed (${res.status}).`);
+  return res;
+}
+async function head(url: string): Promise<{ url: string; pathname: string; size: number; contentType: string }> {
+  return (await blobApi(`/?url=${encodeURIComponent(url)}`, { method: "GET" })).json();
+}
+async function del(url: string): Promise<void> {
+  await blobApi("/delete", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ urls: [url] }) });
+}
 
 /** True once a Blob store is connected to the project (it adds BLOB_READ_WRITE_TOKEN). */
 export function isStorageConfigured(): boolean {
