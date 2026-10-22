@@ -37,6 +37,8 @@ Re-check the official pages and update this table before each new skill ships.
 | Vercel Blob (Hobby) | 1 GB storage, 10 GB downloads, 2,000 uploads a month | Over the limit it pauses for the rest of 30 days, never charges (checked 2026-10-18) | [Pricing](https://vercel.com/docs/vercel-blob/usage-and-pricing) |
 | Cloudflare R2 | 10 GB storage, 1M writes and 10M reads a month, free downloads | A payment method is required to enable R2 | [Pricing](https://developers.cloudflare.com/r2/pricing/) |
 | Stripe | No monthly fee | US cards: 2.9% + 30¢ per charge; international cards +1.5% | [Pricing](https://stripe.com/pricing) |
+| Neon backups (Free) | Restore to any point in the last 6 hours, 1 manual snapshot | No scheduled backups on Free: use `db-backup` (checked 2026-10-22) | [Plans](https://neon.com/docs/introduction/plans) |
+| GitHub Actions | Free in public repos; private repos 2,000 minutes a month and 500 MB artifact + package storage | Scheduled workflows in public repos stop after 60 days without commits (checked 2026-10-22) | [Billing](https://docs.github.com/en/billing/concepts/product-billing/github-actions) |
 
 ## 4. Conventions every skill follows
 

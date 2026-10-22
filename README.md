@@ -35,6 +35,7 @@ Whenever a step needs a sign-in or an approval, the AI stops and tells you what 
 | [file-upload](skills/file-upload/) | Let signed-in users upload images and PDFs to Vercel Blob (free, no card); files survive every deploy | [README](skills/file-upload/README.md) |
 | [deploy-cloudflare](skills/deploy-cloudflare/) | Move off Vercel Hobby (non-commercial only) to Cloudflare Workers so the site can charge; GitHub auto-deploys, free Hyperdrive database pooling | [README](skills/deploy-cloudflare/README.md) |
 | [pay-checkout](skills/pay-checkout/) | A Buy button with Creem (merchant of record, pays out to mainland China banks too), test mode first, payments recorded via a signed webhook | [README](skills/pay-checkout/README.md) |
+| [db-backup](skills/db-backup/) | Daily encrypted database backup on GitHub Actions (free), kept 30 days, one-click restore into a database you choose | [README](skills/db-backup/README.md) |
 
 > When you add a skill, add a row here and in `AGENTS.md`.
 

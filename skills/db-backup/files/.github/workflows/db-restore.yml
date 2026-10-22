@@ -1,0 +1,91 @@
+# db-backup (episode 011): put a backup back into a database.
+# Restores into the database in the secret DB_RESTORE_URL, never into DATABASE_URL unless you type
+# "RESTORE PRODUCTION". Safe habit: restore into a new, empty database first, check it, then switch.
+name: Database restore
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type RESTORE to replace the tables in the DB_RESTORE_URL database with the backup'
+        required: true
+      run_id:
+        description: 'Backup run ID (leave empty for the latest successful backup)'
+        required: false
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check
+        env:
+          CONFIRM: ${{ inputs.confirm }}
+          SOURCE: ${{ secrets.DATABASE_URL }}
+          TARGET: ${{ secrets.DB_RESTORE_URL }}
+          PASS: ${{ secrets.DB_BACKUP_PASSPHRASE }}
+        run: |
+          set -euo pipefail
+          if [ -z "$TARGET" ]; then echo "::error::Missing secret DB_RESTORE_URL: the database to restore into (for example a new, empty Neon database)"; exit 1; fi
+          if [ -z "$PASS" ]; then echo "::error::Missing secret DB_BACKUP_PASSPHRASE (the one the backups were made with)"; exit 1; fi
+          where() { echo "$1" | sed -E 's#^[a-z]+://[^@]*@##; s#\?.*$##; s#-pooler\.#.#; s#:5432/#/#'; }
+          if [ -n "$SOURCE" ] && [ "$(where "$SOURCE")" = "$(where "$TARGET")" ]; then
+            if [ "$CONFIRM" != "RESTORE PRODUCTION" ]; then
+              echo "::error::DB_RESTORE_URL is your production database. Restore into a new database instead, or type RESTORE PRODUCTION if you really mean it."; exit 1
+            fi
+          elif [ "$CONFIRM" != "RESTORE" ]; then
+            echo "::error::Type RESTORE in the confirm box to go ahead."; exit 1
+          fi
+
+      - name: Download the backup
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ inputs.run_id }}
+        run: |
+          set -euo pipefail
+          if [ -z "$RUN_ID" ]; then
+            RUN_ID=$(gh run list -R "$GITHUB_REPOSITORY" --workflow db-backup.yml --status success -L 1 --json databaseId -q '.[0].databaseId')
+          fi
+          if [ -z "$RUN_ID" ]; then echo "::error::No successful backup found. Run the Database backup workflow first."; exit 1; fi
+          gh run download "$RUN_ID" -R "$GITHUB_REPOSITORY" --pattern 'db-backup-*' --dir backup
+          FILE=$(find backup -name db.dump.enc | head -1)
+          if [ -z "$FILE" ]; then echo "::error::That run has no backup file (it may be older than the keep period)."; exit 1; fi
+          mv "$FILE" db.dump.enc
+          mv "$(dirname "$FILE")/row-counts.txt" backup-counts.txt 2>/dev/null || true
+          echo "NAME=$(basename "$(dirname "$FILE")")" >> "$GITHUB_ENV"
+          echo "RUN=$RUN_ID" >> "$GITHUB_ENV"
+
+      - name: Restore
+        env:
+          TARGET: ${{ secrets.DB_RESTORE_URL }}
+          PASS: ${{ secrets.DB_BACKUP_PASSPHRASE }}
+        run: |
+          set -euo pipefail
+          URL="${TARGET/-pooler./.}"
+          echo "::add-mask::$URL"
+          export URL
+          psqlc() { docker run --rm --network host -e URL "postgres:${1}-alpine" psql "$URL" -v ON_ERROR_STOP=1 -tA -c "$2"; }
+          MAJOR=$(psqlc 17 "select current_setting('server_version_num')::int / 10000")
+          docker pull -q "postgres:${MAJOR}-alpine" >/dev/null
+
+          if ! openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 -pass env:PASS -in db.dump.enc -out db.dump 2>/dev/null; then
+            echo "::error::Couldn't decrypt the backup: DB_BACKUP_PASSPHRASE isn't the one this backup was made with."; exit 1
+          fi
+          # All or nothing: if anything fails, the target database is left as it was
+          docker run --rm --network host -e URL -v "$PWD:/w" "postgres:${MAJOR}-alpine" \
+            pg_restore --dbname "$URL" --clean --if-exists --no-owner --no-acl --single-transaction --exit-on-error /w/db.dump
+          rm db.dump
+
+          psqlc "$MAJOR" "select table_schema||'.'||table_name, (xpath('/row/c/text()', query_to_xml(format('select count(*) as c from %I.%I', table_schema, table_name), false, true, '')))[1]::text from information_schema.tables where table_type='BASE TABLE' and table_schema not in ('pg_catalog','information_schema') order by 1" > restored.txt
+          {
+            echo "### ✅ Restored $NAME (run $RUN)"
+            echo ""
+            echo "| Table | Rows in backup | Rows now |"
+            echo "|---|---:|---:|"
+            awk -F'|' 'NR==FNR {b[$1]=$2; next} {m = (($1 in b) && b[$1] != $2) ? " ⚠️" : ""; print "| " $1 " | " (($1 in b) ? b[$1] : "—") " | " $2 m " |"}' backup-counts.txt restored.txt 2>/dev/null \
+              || awk -F'|' '{print "| " $1 " | — | " $2 " |"}' restored.txt
+          } >> "$GITHUB_STEP_SUMMARY"

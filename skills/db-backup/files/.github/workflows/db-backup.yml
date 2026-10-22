@@ -1,0 +1,94 @@
+# db-backup (episode 011): back up the database every day, encrypted, kept on GitHub.
+# Needs two repository secrets (Settings → Secrets and variables → Actions):
+#   DATABASE_URL          the production Postgres connection string
+#   DB_BACKUP_PASSPHRASE  a long random password that encrypts every backup (keep a copy in your password manager)
+# Restore with the "Database restore" workflow (db-restore.yml).
+name: Database backup
+
+on:
+  schedule:
+    - cron: "17 3 * * *" # every day at 03:17 UTC
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: db-backup
+  cancel-in-progress: false
+
+env:
+  KEEP_DAYS: 30 # how long each backup is kept
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check secrets
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          PASS: ${{ secrets.DB_BACKUP_PASSPHRASE }}
+        run: |
+          if [ -z "$DATABASE_URL" ]; then echo "::error::Missing secret DATABASE_URL (Settings → Secrets and variables → Actions → New repository secret)"; exit 1; fi
+          if [ "${#PASS}" -lt 16 ]; then echo "::error::Secret DB_BACKUP_PASSPHRASE is missing or shorter than 16 characters"; exit 1; fi
+
+      - name: Back up
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          PASS: ${{ secrets.DB_BACKUP_PASSPHRASE }}
+        run: |
+          set -euo pipefail
+          # pg_dump needs a direct connection, not a pooled one (Neon: drop "-pooler" from the host)
+          URL="${DATABASE_URL/-pooler./.}"
+          echo "::add-mask::$URL"
+          export URL
+          psqlc() { docker run --rm --network host -e URL "postgres:${1}-alpine" psql "$URL" -v ON_ERROR_STOP=1 -tA -c "$2"; }
+
+          MAJOR=$(psqlc 17 "select current_setting('server_version_num')::int / 10000")
+          echo "Postgres $MAJOR"
+          docker pull -q "postgres:${MAJOR}-alpine" >/dev/null
+
+          # Row counts, so a restore can be checked against them
+          psqlc "$MAJOR" "select table_schema||'.'||table_name, (xpath('/row/c/text()', query_to_xml(format('select count(*) as c from %I.%I', table_schema, table_name), false, true, '')))[1]::text from information_schema.tables where table_type='BASE TABLE' and table_schema not in ('pg_catalog','information_schema') order by 1" > counts.txt
+
+          docker run --rm --network host -e URL "postgres:${MAJOR}-alpine" pg_dump "$URL" --format=custom --compress=9 > db.dump
+          openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -salt -pass env:PASS -in db.dump -out db.dump.enc
+
+          # Prove the encrypted file can be opened and read before calling it a backup
+          ITEMS=$(openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 -pass env:PASS -in db.dump.enc \
+            | docker run --rm -i "postgres:${MAJOR}-alpine" pg_restore --list | grep -c " TABLE DATA " || true)
+          if [ "$ITEMS" -lt 1 ]; then echo "::error::The backup has no table data. Is DATABASE_URL the right database?"; exit 1; fi
+          rm db.dump
+
+          DAY=$(date -u +%F)
+          BYTES=$(stat -c %s db.dump.enc)
+          TABLES=$(wc -l < counts.txt)
+          ROWS=$(awk -F'|' '{s+=$2} END {print s+0}' counts.txt)
+          echo "DAY=$DAY" >> "$GITHUB_ENV"
+          {
+            echo "### ✅ Backup $DAY"
+            echo ""
+            echo "Postgres $MAJOR · $TABLES tables · $ROWS rows · $(( (BYTES + 1023) / 1024 )) KB encrypted · kept $KEEP_DAYS days"
+            echo ""
+            echo "| Table | Rows |"
+            echo "|---|---:|"
+            awk -F'|' '{print "| " $1 " | " $2 " |"}' counts.txt
+            echo ""
+            echo "Restore: Actions → Database restore → Run workflow (run ID $GITHUB_RUN_ID)"
+          } >> "$GITHUB_STEP_SUMMARY"
+          mv counts.txt row-counts.txt
+
+          # Tell other systems (core_events), if app-foundation's events table exists
+          psqlc "$MAJOR" "do \$\$ begin if to_regclass('public.core_events') is not null then insert into core_events (type, source, subject_id, payload) values ('db.backed_up', 'db-backup', '${GITHUB_RUN_ID}', jsonb_build_object('day', '$DAY', 'bytes', $BYTES, 'tables', $TABLES, 'rows', $ROWS)); end if; end \$\$;" >/dev/null
+
+      - name: Keep the backup
+        uses: actions/upload-artifact@v6
+        with:
+          name: db-backup-${{ env.DAY }}
+          path: |
+            db.dump.enc
+            row-counts.txt
+          retention-days: ${{ env.KEEP_DAYS }}
+          compression-level: 0
+          if-no-files-found: error
