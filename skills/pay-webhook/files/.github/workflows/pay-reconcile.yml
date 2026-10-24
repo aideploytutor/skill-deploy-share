@@ -1,0 +1,28 @@
+# pay-webhook (episode 012): every hour, ask the site to catch up on payments whose
+# notifications never arrived (site down, deploy in progress, Creem gave up retrying).
+# No secrets needed: the endpoint only re-checks this site's own pending payments with Creem.
+name: Payment catch-up
+
+on:
+  schedule:
+    - cron: "23 * * * *" # every hour at :23
+  workflow_dispatch: {}
+
+permissions: {}
+
+env:
+  SITE_URL: __SITE_URL__
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Catch up on payments
+        run: |
+          set -euo pipefail
+          OUT=$(curl -sS --retry 3 --retry-all-errors --max-time 60 -X POST "$SITE_URL/api/pay/reconcile" -w '\n%{http_code}')
+          CODE=$(echo "$OUT" | tail -1); BODY=$(echo "$OUT" | sed '$d')
+          echo "$BODY"
+          { echo "### Payment catch-up"; echo ""; echo '```'; echo "$BODY"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          if [ "$CODE" != "200" ]; then echo "::error::$SITE_URL/api/pay/reconcile answered $CODE"; exit 1; fi
