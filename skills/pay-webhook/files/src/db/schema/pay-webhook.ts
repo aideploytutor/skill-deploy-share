@@ -4,12 +4,13 @@ import { payPayments } from "./pay";
 
 /**
  * pay-webhook (episode 012): every Creem notification, written down once.
- * The id is Creem's event id, so a notification delivered twice is handled once.
+ * The id is "<event type>:<Creem object id>" (e.g. refund.created:ref_...), so the same refund or
+ * payment is handled once even if Creem delivers it twice or the owner presses Resend.
  */
 export const payWebhookEvents = pgTable(
   "pay_webhook_events",
   {
-    id: text("id").primaryKey(), // Creem event id, e.g. evt_...
+    id: text("id").primaryKey(), // "<event type>:<object id>", e.g. "checkout.completed:ch_..."
     type: text("type").notNull(), // checkout.completed, refund.created, ...
     status: text("status").notNull().default("received"), // received → done | ignored | failed
     paymentId: uuid("payment_id"),

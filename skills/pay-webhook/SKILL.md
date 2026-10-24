@@ -21,7 +21,7 @@ Goal: the owner never touches an order. Pay → access unlocks by itself; refund
 
 ## What it does
 
-- **Exactly once:** every notification is written to `pay_webhook_events` by Creem's event id first. A repeat answers 200 `duplicate` and does nothing. A failure is saved with the error and answers 500, so Creem retries; the retry is processed again.
+- **Exactly once:** every notification is written to `pay_webhook_events` first, keyed by event type + Creem object id (`refund.created:<refund id>`), not by the delivery's event id: Creem's **Resend** gives the same refund a new event id (seen in testing). A repeat answers 200 `duplicate` and does nothing; a full refund or dispute that's already recorded is never applied twice. A failure is saved with the error and answers 500, so Creem retries; the retry is processed again.
 - **Unlocks:** `checkout.completed` → payment paid → a `pay_grants` row → `pay.granted`. `hasAccess(userId, productId?)` gates any page; `/members` is a ready example.
 - **Takes back:** `refund.created` (full) → payment `refunded`, grant revoked, `pay.refunded`. A partial refund only emits `pay.refunded` with `full: false`. `dispute.created` → `disputed`, revoked, `pay.disputed`.
 - **Ignores other sites' events:** a notification whose payment isn't in this site's `pay_payments` is marked `ignored` (one Creem store can serve several sites).
@@ -52,9 +52,8 @@ Creem → **Developers → Webhooks** → the `/api/pay/webhook` endpoint → ma
 
 1. Signed in, `/members` → Locked (or Unlocked if this account already paid: `ensureGrants` backfills).
 2. Owner buys on `/pricing` with the test card → **Open members area** → Unlocked.
-3. Creem → Developers → Webhooks → the delivery → **Resend** → the response says `"result":"duplicate"`, nothing doubles.
-4. Owner refunds that test payment in Creem → `/members` Locked ("Access was removed after a refund"), `/pricing` ↩️ Refunded, `core_events` has `pay.refunded`.
-5. GitHub → **Actions → Payment catch-up → Run workflow** → green; summary `{"ok":true,"checked":…,"recovered":…,"repaired":…}`.
+3. Owner refunds that test payment in Creem → `/members` Locked ("Access was removed after a refund"), `/pricing` ↩️ Refunded, `core_events` has `pay.refunded`.
+4. GitHub → **Actions → Payment catch-up → Run workflow** → green; summary `{"ok":true,"checked":…,"recovered":…,"repaired":…}`.
 
 ## Using it in code
 

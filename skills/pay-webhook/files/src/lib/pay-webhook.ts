@@ -6,7 +6,8 @@ import { confirmCheckout, markPaid, payMode } from "@/lib/pay";
 
 /**
  * pay-webhook (episode 012): handle every payment automatically, never miss one.
- * - Each Creem notification is recorded once (by event id) and processed once.
+ * - Each thing Creem reports (a checkout, a refund, a dispute) is recorded once and processed once,
+ *   even when Creem delivers it again or the owner presses Resend.
  * - A paid payment unlocks access (pay_grants); a full refund or chargeback takes it away.
  * - reconcile() asks Creem about payments still pending, for when every notification failed.
  */
@@ -64,6 +65,7 @@ async function processEvent(event: CreemEvent): Promise<Result> {
     case "refund.created": {
       const p = await findPayment(o.checkout?.request_id, o.checkout?.id);
       if (!p) return { status: "ignored" };
+      if (p.status === "refunded") return { status: "done", paymentId: p.id }; // already fully refunded
       const refunded = Number(o.refund_amount ?? 0);
       const full = p.amount == null || refunded >= p.amount;
       if (full) {
@@ -81,6 +83,7 @@ async function processEvent(event: CreemEvent): Promise<Result> {
     case "dispute.created": {
       const p = await findPayment(o.checkout?.request_id, o.checkout?.id);
       if (!p) return { status: "ignored" };
+      if (p.status === "disputed") return { status: "done", paymentId: p.id };
       await getDb().update(payPayments).set({ status: "disputed" }).where(eq(payPayments.id, p.id));
       await revoke(p.id, "disputed");
       await emitEvent({
@@ -102,14 +105,16 @@ async function processEvent(event: CreemEvent): Promise<Result> {
  */
 export async function handleCreemEvent(event: CreemEvent): Promise<Result["status"] | "duplicate"> {
   if (!event.id || !event.eventType) return "ignored";
+  // Key on what happened, not on the delivery: Creem's "Resend" gives the same refund a new event id.
+  const key = typeof event.object?.id === "string" ? `${event.eventType}:${event.object.id}` : event.id;
   const db = getDb();
   const fresh = await db
     .insert(payWebhookEvents)
-    .values({ id: event.id, type: event.eventType })
+    .values({ id: key, type: event.eventType })
     .onConflictDoNothing()
     .returning({ id: payWebhookEvents.id });
   if (!fresh[0]) {
-    const [seen] = await db.select({ status: payWebhookEvents.status }).from(payWebhookEvents).where(eq(payWebhookEvents.id, event.id));
+    const [seen] = await db.select({ status: payWebhookEvents.status }).from(payWebhookEvents).where(eq(payWebhookEvents.id, key));
     if (seen && seen.status !== "failed") return "duplicate";
   }
   try {
@@ -117,11 +122,11 @@ export async function handleCreemEvent(event: CreemEvent): Promise<Result["statu
     await db
       .update(payWebhookEvents)
       .set({ status: r.status, paymentId: r.paymentId ?? null, error: null, processedAt: new Date() })
-      .where(eq(payWebhookEvents.id, event.id));
+      .where(eq(payWebhookEvents.id, key));
     return r.status;
   } catch (e) {
     const message = e instanceof Error ? e.message : String(e);
-    await db.update(payWebhookEvents).set({ status: "failed", error: message.slice(0, 500) }).where(eq(payWebhookEvents.id, event.id));
+    await db.update(payWebhookEvents).set({ status: "failed", error: message.slice(0, 500) }).where(eq(payWebhookEvents.id, key));
     throw e;
   }
 }

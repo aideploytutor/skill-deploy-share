@@ -6,7 +6,7 @@
 | Partial refund didn't lock access | By design: only a full refund revokes | Refund the full amount, or handle `pay.refunded` with `full: false` yourself |
 | Webhook delivery shows 500 | Processing failed (database down, deploy in progress) | Nothing to do: Creem retries. The error is in `pay_webhook_events.error` and the host's logs |
 | Webhook response `"result":"ignored"` | The payment isn't from this site (another site on the same Creem store), or an event type we don't handle yet | Expected |
-| Webhook response `"result":"duplicate"` | Creem (or you) sent the same event again | Expected: it was handled the first time |
+| Webhook response `"result":"duplicate"` | Creem (or you, with Resend) sent the same payment/refund again | Expected: it was handled the first time. Resend creates a new event id, so we match on the refund/checkout id instead |
 | Payment catch-up fails with 404 | Wrong address in `.github/workflows/pay-reconcile.yml`, or not deployed yet | Fix `SITE_URL` in the workflow, push |
 | Payment catch-up 503 "payments not configured" | `CREEM_API_KEY` missing on the site | Add it in the host's settings |
 | Catch-up answers `"skipped"` | It ran less than 5 minutes ago | Expected: it's rate-limited so nobody can hammer Creem through it |
