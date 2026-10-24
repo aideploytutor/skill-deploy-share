@@ -23,7 +23,7 @@
 | # | Skill | What it does | Requires |
 |---|---|---|---|
 | 010 | ✅ [pay-checkout](skills/pay-checkout/) | Accept payments in one sentence (Creem, test mode first) | auth-login, deploy-cloudflare |
-| 012 | `pay-webhook` | Handle successful payments automatically, never miss one | pay-checkout |
+| 012 | ✅ [pay-webhook](skills/pay-webhook/) | Handle successful payments automatically, never miss one | pay-checkout |
 | 013 | `pay-subscription` | Monthly subscriptions | pay-webhook |
 | 014 | `pay-stripe` | Have a US/HK company? Take payments with Stripe instead | auth-login |
 | 015 | `pay-cn-guide` | Taking payments from customers in China | — |
