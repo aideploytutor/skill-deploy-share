@@ -37,6 +37,7 @@ Whenever a step needs a sign-in or an approval, the AI stops and tells you what 
 | [pay-checkout](skills/pay-checkout/) | A Buy button with Creem (merchant of record, pays out to mainland China banks too), test mode first, payments recorded via a signed webhook | [README](skills/pay-checkout/README.md) |
 | [db-backup](skills/db-backup/) | Daily encrypted database backup on GitHub Actions (free), kept 30 days, one-click restore into a database you choose | [README](skills/db-backup/README.md) |
 | [pay-webhook](skills/pay-webhook/) | Payments that look after themselves: unlock on payment, lock on refund or chargeback, each notification handled once, hourly catch-up for lost ones | [README](skills/pay-webhook/README.md) |
+| [pay-subscription](skills/pay-subscription/) | Monthly subscriptions with Creem: charged automatically every month, access follows renewals and cancellations, /billing with self-service cancel | [README](skills/pay-subscription/README.md) |
 
 > When you add a skill, add a row here and in `AGENTS.md`.
 

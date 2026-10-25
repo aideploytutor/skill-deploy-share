@@ -3,7 +3,7 @@ name: pay-webhook
 description: Make Creem payments on an app-foundation site fully automatic and complete — every paid order unlocks access (pay_grants), refunds and chargebacks take it away, each notification is processed exactly once, failures return 500 so Creem retries, and an hourly catch-up asks Creem about anything still pending. Use when the user says "handle payments automatically", "unlock content after payment", "what if a webhook is missed", "handle refunds", "paid users only page", or a later skill (subscriptions, receipts, orders) requires pay-webhook.
 license: MIT
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
   episode: "012"
   requires: "pay-checkout"
   provides: "pay_webhook_events, pay_grants tables; src/lib/pay-webhook.ts (handleCreemEvent, grantFor, hasAccess, ensureGrants, listGrants, reconcile); /api/pay/webhook (payments, refunds, disputes), /api/pay/reconcile, /members; .github/workflows/pay-reconcile.yml; pay.granted, pay.refunded, pay.disputed, pay.reconciled events"
@@ -54,6 +54,12 @@ Creem → **Developers → Webhooks** → the `/api/pay/webhook` endpoint → ma
 2. Owner buys on `/pricing` with the test card → **Open members area** → Unlocked.
 3. Owner refunds that test payment in Creem → `/members` Locked ("Access was removed after a refund"), `/pricing` ↩️ Refunded, `core_events` has `pay.refunded`.
 4. GitHub → **Actions → Payment catch-up → Run workflow** → green; summary `{"ok":true,"checked":…,"recovered":…,"repaired":…}`.
+
+## Extending it (1.1.0)
+
+- Later skills add handlers: `handleCreemEvent(event, [myHandler])`; a `CreemHandler` runs after the built-in handling and may return its own `Result`.
+- Recurring (monthly/yearly) products never get a lifetime grant: `grantFor` skips them, pay-subscription (013) gives time-limited access instead.
+- Subscription events are keyed by subscription id + transaction (renewals) or update time, so month 2 isn't mistaken for a repeat of month 1.
 
 ## Using it in code
 

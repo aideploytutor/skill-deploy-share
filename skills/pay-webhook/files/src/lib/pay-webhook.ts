@@ -2,7 +2,7 @@ import { and, desc, eq, gt, isNull, lt, or } from "drizzle-orm";
 import { getDb } from "@/db";
 import { coreEvents, payGrants, payPayments, payWebhookEvents } from "@/db/schema";
 import { emitEvent } from "@/lib/events";
-import { confirmCheckout, markPaid, payMode } from "@/lib/pay";
+import { confirmCheckout, getProduct, markPaid, payMode } from "@/lib/pay";
 
 /**
  * pay-webhook (episode 012): handle every payment automatically, never miss one.
@@ -10,10 +10,13 @@ import { confirmCheckout, markPaid, payMode } from "@/lib/pay";
  *   even when Creem delivers it again or the owner presses Resend.
  * - A paid payment unlocks access (pay_grants); a full refund or chargeback takes it away.
  * - reconcile() asks Creem about payments still pending, for when every notification failed.
+ * - Later skills (pay-subscription, ...) plug in as extra handlers: handleCreemEvent(event, [theirHandler]).
  */
 
-type CreemEvent = { id?: string; eventType?: string; object?: Record<string, any> };
-type Result = { status: "done" | "ignored"; paymentId?: string };
+export type CreemEvent = { id?: string; eventType?: string; object?: Record<string, any> };
+export type Result = { status: "done" | "ignored"; paymentId?: string };
+/** Runs after the built-in handling; return a Result to replace it, or null to keep it. */
+export type CreemHandler = (event: CreemEvent, builtIn: Result) => Promise<Result | null>;
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -28,11 +31,25 @@ async function findPayment(requestId?: string, checkoutId?: string) {
   return p;
 }
 
-/** Unlock what a paid payment bought. Safe to call many times. */
+const recurring = new Map<string, boolean>();
+/** Monthly/yearly products give time-limited access (pay-subscription), never a lifetime grant. */
+async function isRecurring(productId: string): Promise<boolean> {
+  if (!recurring.has(productId)) {
+    try {
+      recurring.set(productId, (await getProduct(productId)).billing_type === "recurring");
+    } catch {
+      return false;
+    }
+  }
+  return recurring.get(productId)!;
+}
+
+/** Unlock what a one-time payment bought. Safe to call many times. */
 export async function grantFor(paymentId: string): Promise<boolean> {
   const db = getDb();
   const [p] = await db.select().from(payPayments).where(eq(payPayments.id, paymentId));
   if (!p || p.status !== "paid") return false;
+  if (await isRecurring(p.productId)) return false;
   const rows = await db
     .insert(payGrants)
     .values({ userId: p.userId, productId: p.productId, paymentId: p.id })
@@ -51,7 +68,7 @@ async function revoke(paymentId: string, reason: "refunded" | "disputed") {
     .where(and(eq(payGrants.paymentId, paymentId), isNull(payGrants.revokedAt)));
 }
 
-async function processEvent(event: CreemEvent): Promise<Result> {
+async function builtIn(event: CreemEvent): Promise<Result> {
   const o = event.object ?? {};
   switch (event.eventType) {
     case "checkout.completed": {
@@ -95,18 +112,38 @@ async function processEvent(event: CreemEvent): Promise<Result> {
       return { status: "done", paymentId: p.id };
     }
     default:
-      return { status: "ignored" }; // subscriptions etc. are handled by later skills
+      return { status: "ignored" }; // subscriptions etc. are handled by later skills' handlers
   }
+}
+
+async function processEvent(event: CreemEvent, handlers: CreemHandler[]): Promise<Result> {
+  let result = await builtIn(event);
+  for (const h of handlers) result = (await h(event, result)) ?? result;
+  return result;
+}
+
+/**
+ * The same thing reported twice gets the same key: type + Creem object id. Creem's "Resend" gives
+ * a refund a new event id, so the event id can't be the key. A subscription keeps its id for its
+ * whole life, so its events add the transaction (renewals) or the update time.
+ */
+function eventKey(event: CreemEvent): string {
+  const o = event.object ?? {};
+  if (typeof o.id !== "string") return event.id!;
+  if (o.object === "subscription" || event.eventType?.startsWith("subscription.")) {
+    const v = event.eventType === "subscription.paid" ? o.last_transaction_id : o.updated_at;
+    return `${event.eventType}:${o.id}:${v ?? event.id}`;
+  }
+  return `${event.eventType}:${o.id}`;
 }
 
 /**
  * Handle one verified Creem notification. Returns "duplicate" for one already handled.
  * Throws if processing fails, so the webhook answers 500 and Creem tries again later.
  */
-export async function handleCreemEvent(event: CreemEvent): Promise<Result["status"] | "duplicate"> {
+export async function handleCreemEvent(event: CreemEvent, handlers: CreemHandler[] = []): Promise<Result["status"] | "duplicate"> {
   if (!event.id || !event.eventType) return "ignored";
-  // Key on what happened, not on the delivery: Creem's "Resend" gives the same refund a new event id.
-  const key = typeof event.object?.id === "string" ? `${event.eventType}:${event.object.id}` : event.id;
+  const key = eventKey(event);
   const db = getDb();
   const fresh = await db
     .insert(payWebhookEvents)
@@ -118,7 +155,7 @@ export async function handleCreemEvent(event: CreemEvent): Promise<Result["statu
     if (seen && seen.status !== "failed") return "duplicate";
   }
   try {
-    const r = await processEvent(event);
+    const r = await processEvent(event, handlers);
     await db
       .update(payWebhookEvents)
       .set({ status: r.status, paymentId: r.paymentId ?? null, error: null, processedAt: new Date() })
