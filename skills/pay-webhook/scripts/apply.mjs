@@ -18,7 +18,7 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
-const VERSION = "1.0.0";
+const VERSION = "1.1.0";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const FILES = path.join(here, "..", "files");
 const NEW_FILES = [
@@ -32,6 +32,10 @@ const WORKFLOW = ".github/workflows/pay-reconcile.yml";
 // Earlier versions we may replace: pay-checkout 1.0.0's webhook route (only if the owner never edited it).
 const PREVIOUS = {
   "src/app/api/pay/webhook/route.ts": ["cc6f48a49859d8b6d615be1ee5747247a3dbd96907fb585836aea92dffdf8235"],
+  "src/lib/pay-webhook.ts": [
+    "d6fc454926fa52fcafba65bcede0cb76ac2736941394ea8b3f87e252d566aeb8", // 1.0.0 (pre-release)
+    "9f7feb1aa63d646ea006328d05ede14a4f5f649984acf44f7a9bec963e8886ec", // 1.0.0
+  ],
 };
 // Small edits to pay-checkout's pages (skipped with a note if the owner changed those lines).
 const PATCHES = [
