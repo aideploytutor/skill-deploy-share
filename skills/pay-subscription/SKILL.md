@@ -22,6 +22,8 @@ Goal: a visitor subscribes once on `/billing`, Creem charges their card every mo
 | `subscription.scheduled_cancel` or `subscription.canceled` | scheduled_cancel / canceled | until the end of the period already paid |
 | `subscription.unpaid`, `paused`, `expired` (ended), a refund of a subscription payment | ended | none |
 
+In testing, `subscription.paid` arrived **before** `checkout.completed`, so the handler also links a subscription from the `userId` our checkout puts in metadata. Creem's portal cancel sends `subscription.canceled` and keeps access to the period end, which matches the table.
+
 Renewals (`subscription.paid` with a later period end) add to `renewals` and emit `pay.renewed` with the amount, for revenue reports. If a renewal webhook never arrives, `/billing` asks Creem (`GET /subscriptions?subscription_id=`) when the period end has passed.
 
 ## Rules
