@@ -5,7 +5,7 @@ Created with [app-foundation](https://github.com/aideploytutor/skill-deploy-shar
 ## Things to say to your AI
 
 - "Open the site locally so I can see it"
-- "Deploy this project to GitHub and Vercel": episode 001, github-vercel-deploy
+- "Launch this site on Cloudflare and start taking payments": launch-kit (episode 014)
 - "Use db-connect to connect a free database to my project": episode 003
 
 ## For AI and developers

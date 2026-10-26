@@ -19,7 +19,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
       <main className="mx-auto flex max-w-md flex-col gap-6 px-5 py-16">
         <span className="w-fit rounded-full border border-line px-3 py-1 text-xs text-muted">auth-login</span>
         <h1 className="text-3xl font-black">Sign-in isn't set up yet</h1>
-        <p className="text-muted">The site owner needs to add these in Vercel → Settings → Environment Variables:</p>
+        <p className="text-muted">The site owner needs to add these in the host's settings (Cloudflare → Worker → Settings → Variables and Secrets):</p>
         <ul className="flex flex-col gap-2">
           {missing.map((m) => (
             <li key={m}><code className="rounded-md bg-line/60 px-2 py-0.5 text-sm">{m}</code></li>

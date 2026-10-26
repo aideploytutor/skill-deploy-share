@@ -29,6 +29,7 @@ When a user request matches a skill's `description`:
 | [db-backup](skills/db-backup/SKILL.md) | The user wants database backups, is worried about losing data, deleted data by mistake, or another skill requires `db-backup`. Example phrasings: "back up my database", "what if I lose my data", "restore my database". |
 | [pay-webhook](skills/pay-webhook/SKILL.md) | The user wants payments handled automatically (unlock after paying, refunds, chargebacks), worries about missed webhooks, wants a paid-users-only page, or a later skill requires `pay-webhook`. Example phrasings: "handle payments automatically", "unlock content after payment", "handle refunds". |
 | [pay-subscription](skills/pay-subscription/SKILL.md) | The user wants to charge monthly/yearly, recurring payments or a membership fee, or a later skill requires `pay-subscription`. Example phrasings: "charge monthly", "add subscriptions", "membership fee". |
+| [launch-kit](skills/launch-kit/SKILL.md) | The user wants to start from scratch and end up with a live site that takes payments, or asks what is still missing before launch. Example phrasings: "build me a site that takes payments", "launch my product from scratch", "what is left before I can launch?". |
 
 ## Shared conventions
 Every skill must follow `STACK.md` (shared stack, table prefixes, env var names, requires/provides metadata). The full plan is in `ROADMAP.md`.

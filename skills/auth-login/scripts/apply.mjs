@@ -9,7 +9,7 @@
  * Adds the auth_* tables, /login, /account and /api/auth/*, the better-auth dependency,
  * documents the variables in .env.example, records the install, and commits.
  * Then generates the database migration if dependencies are installed (npm run db:generate).
- * It never touches secrets: BETTER_AUTH_SECRET and GOOGLE_CLIENT_SECRET are set by the owner in Vercel.
+ * It never touches secrets: BETTER_AUTH_SECRET and GOOGLE_CLIENT_SECRET are set by the owner in the host's settings.
  */
 import crypto from "node:crypto";
 import fs from "node:fs";
@@ -114,7 +114,7 @@ try {
   const env = fs.existsSync(envEx) ? fs.readFileSync(envEx, "utf8") : "";
   if (!/BETTER_AUTH_SECRET/.test(env)) {
     write(dir, ".env.example", env.trimEnd() +
-      "\n\n# auth-login (episode 006) — set these in Vercel → Settings → Environment Variables.\n" +
+      "\n\n# auth-login (episode 006) — set these in the host's settings (Cloudflare → Worker → Settings → Variables and Secrets).\n" +
       "# BETTER_AUTH_SECRET=...                (secret: random, 32+ characters; /login can generate one)\n" +
       "# BETTER_AUTH_URL=https://your-domain   (optional; defaults to NEXT_PUBLIC_SITE_URL)\n" +
       "# GOOGLE_CLIENT_ID=...apps.googleusercontent.com\n" +
@@ -150,8 +150,8 @@ try {
 
   result.ok = true;
   result.next = [
-    "Owner: open /login after deploying → Generate BETTER_AUTH_SECRET → paste into Vercel (Sensitive)",
-    "Owner: Google Cloud → OAuth client (Web) with redirect URI https://<domain>/api/auth/callback/google → GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET into Vercel",
+    "Owner: open /login after deploying → Generate BETTER_AUTH_SECRET → paste into the host as a Secret",
+    "Owner: Google Cloud → OAuth client (Web) with redirect URI https://<domain>/api/auth/callback/google → GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET into the host",
     "Redeploy, open /login, try both ways, then /account",
   ];
   log(opts.check ? "Would change:" : "Changed:", result.changed.length ? result.changed.join(", ") : "nothing");

@@ -6,7 +6,7 @@
  *   node apply.mjs --dir ./my-shop --check  report what would change, change nothing
  *   node apply.mjs ... --json               machine-readable result
  *
- * It never touches secrets: DATABASE_URL is set by Vercel's Neon integration
+ * It never touches secrets: DATABASE_URL is pasted by the owner into the host's settings
  * (or typed into .env.local by the owner), not by this script.
  */
 import crypto from "node:crypto";
@@ -141,8 +141,8 @@ try {
     // drop the placeholder lines app-foundation wrote, then add the full block
     const kept = env.split(/\r?\n/).filter((l) => !/^#\s*db-connect\b/.test(l) && !/^#\s*DATABASE_URL=/.test(l)).join("\n");
     const block = kept.trimEnd() +
-      "\n\n# db-connect (episode 003) — set automatically by Vercel's Neon integration.\n" +
-      "# For local development, copy the values from Vercel → Storage → your database → .env.local tab.\n" +
+      "\n\n# db-connect (episode 003) — Neon → Connect → copy; paste into the host's settings as a Secret (runtime AND build).\n" +
+      "# For local development, put the same value in .env.local (never commit it).\n" +
       "# DATABASE_URL=postgres://...            (pooled, used by the app)\n" +
       "# DATABASE_URL_UNPOOLED=postgres://...   (direct, used for migrations)\n";
     write(dir, ".env.example", block);
@@ -163,8 +163,8 @@ try {
 
   result.ok = true;
   result.next = [
-    "Owner: Vercel → project → Storage → Create Database → Neon (Free) → connect to this project",
-    "Deploy (git push, or redeploy in Vercel) so the build picks up DATABASE_URL and creates the tables",
+    "Owner: neon.com → New project (Free) → Connect → copy the connection string → paste as DATABASE_URL (Secret) into the host: runtime variables and, on Cloudflare, Builds → Variables too",
+    "Push (or retry the build) so the build picks up DATABASE_URL and creates the tables",
     "Open /api/health (database.status = connected) and /db-test",
   ];
   log(opts.check ? "Would change:" : "Changed:", result.changed.length ? result.changed.join(", ") : "nothing");
