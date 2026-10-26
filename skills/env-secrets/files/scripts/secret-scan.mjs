@@ -92,6 +92,6 @@ else if (!out.length) console.log(`✔ No secrets found (${args.has("--staged") 
 else {
   console.log(`✖ Found ${out.length} possible secret${out.length > 1 ? "s" : ""}:\n`);
   for (const f of out) console.log(`  ${f.label}${f.sample ? `  ${f.sample}` : ""}\n    ${f.file}${f.line ? `:${f.line}` : ""}  (${f.where})`);
-  console.log("\nWhat to do:\n  1. Revoke the key at the provider and create a new one (deleting the file is not enough).\n  2. Put the new key in Vercel → Settings → Environment Variables, or .env.local for your own computer.\n  3. Read the code from process.env.NAME instead of writing the key in the file.\n  Not a real key (an example)? Add the comment  secret-scan: allow  on that line.");
+  console.log("\nWhat to do:\n  1. Revoke the key at the provider and create a new one (deleting the file is not enough).\n  2. Put the new key in the host's settings (Cloudflare → Worker → Settings → Variables and Secrets), or .env.local for your own computer.\n  3. Read the code from process.env.NAME instead of writing the key in the file.\n  Not a real key (an example)? Add the comment  secret-scan: allow  on that line.");
 }
 process.exitCode = out.length ? 1 : 0;

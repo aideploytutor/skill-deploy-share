@@ -16,7 +16,7 @@ export default function SecretMaker() {
   return (
     <section className="flex flex-col gap-3 rounded-2xl border border-line p-5">
       <h2 className="font-bold">Generate BETTER_AUTH_SECRET</h2>
-      <p className="text-sm text-muted">Made randomly in your own browser and never sent anywhere. Copy it, paste it into Vercel, turn on Sensitive, then redeploy. Don't send it to anyone, including your AI.</p>
+      <p className="text-sm text-muted">Made randomly in your own browser and never sent anywhere. Copy it, paste it into your host as a Secret (Cloudflare: Worker → Settings → Variables and Secrets). Don't send it to anyone, including your AI.</p>
       {secret ? (
         <>
           <code className="break-all rounded-xl border border-line p-3 text-sm select-all">{secret}</code>

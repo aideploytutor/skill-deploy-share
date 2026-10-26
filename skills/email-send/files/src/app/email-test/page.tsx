@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 
 // This page is public. To stop strangers using your domain to email people:
 // - with no access code, it only ever emails the owner (EMAIL_TEST_TO);
-// - any other address needs the access code (EMAIL_TEST_CODE, set by the owner in Vercel);
+// - any other address needs the access code (EMAIL_TEST_CODE, set by the owner in the host's settings);
 // - always at most once a minute and 10 times a day, and the content is fixed.
 const COOLDOWN_S = 60;
 const DAILY_CAP = 10;
@@ -79,7 +79,7 @@ const MESSAGES: Record<string, [string, string]> = {
   config: ["Not set up yet", "Add the environment variables in the checklist below, then redeploy."],
   noto: ["Send to whom?", "Enter a recipient email first."],
   bad: ["That email doesn't look right", "Check for extra spaces or a missing @."],
-  nocode: ["You can only send to yourself", "To send to other addresses, set a test code EMAIL_TEST_CODE in Vercel, then redeploy."],
+  nocode: ["You can only send to yourself", "To send to other addresses, set a test code EMAIL_TEST_CODE in the host's settings (Cloudflare: Worker → Settings → Variables and Secrets)."],
   code: ["Wrong test code", "Sending to other addresses needs the correct test code."],
   fail: ["❌ Sending failed", ""],
 };
@@ -90,7 +90,7 @@ export default async function EmailTestPage({ searchParams }: { searchParams: Pr
   const owner = process.env.EMAIL_TEST_TO ?? "";
   const hasCode = Boolean(process.env.EMAIL_TEST_CODE);
   const checks: [string, boolean, string][] = [
-    ["RESEND_API_KEY", Boolean(process.env.RESEND_API_KEY), "Resend sending key (only in Vercel, never share it)"],
+    ["RESEND_API_KEY", Boolean(process.env.RESEND_API_KEY), "Resend sending key (only in the host's settings, never share it)"],
     ["EMAIL_FROM", Boolean(from), from || "Sender, e.g. My Shop <hello@mail.example.com>"],
     ["EMAIL_TEST_TO", Boolean(owner), owner ? `${maskEmail(owner)} (used when no recipient is entered)` : "Optional: your own email, used when no recipient is entered"],
     ["EMAIL_TEST_CODE", hasCode, hasCode ? (owner ? "Set: needed to send to other addresses" : "Set: needed to send") : "Optional: set it to send to other addresses"],

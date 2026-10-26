@@ -3,7 +3,7 @@ import { emitEvent } from "@/lib/events";
 /**
  * email-send (episode 005): send email from your own domain.
  *
- * Uses Resend's plain HTTP API (no SDK), so it runs on Vercel and Cloudflare alike.
+ * Uses Resend's plain HTTP API (no SDK), so it runs on Cloudflare Workers (and any other host).
  * Swapping provider later means changing this one file.
  *
  *   const r = await sendEmail({ to: "a@b.com", subject: "Hello", html: "<p>…</p>" });
@@ -23,7 +23,7 @@ export type EmailInput = {
 
 export type EmailResult = { ok: true; id: string } | { ok: false; error: string };
 
-/** True once RESEND_API_KEY and EMAIL_FROM are set (Vercel → Settings → Environment Variables). */
+/** True once RESEND_API_KEY and EMAIL_FROM are set (Cloudflare → Worker → Settings → Variables and Secrets). */
 export function isEmailConfigured(): boolean {
   return Boolean(process.env.RESEND_API_KEY && process.env.EMAIL_FROM);
 }

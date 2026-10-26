@@ -9,7 +9,7 @@ paste passwords or secret keys into the chat.
 ## Stack (do not swap without asking)
 - Next.js (App Router) + TypeScript + Tailwind CSS
 - Postgres through Drizzle ORM (`src/db`). Standard SQL only, so any Postgres provider works.
-- Must deploy on both Vercel and Cloudflare: avoid platform-only APIs.
+- Deploys on Cloudflare Workers (deploy-cloudflare). Keep it portable: standard Web APIs, no platform-only features.
 
 ## Where things go
 | What | Where |

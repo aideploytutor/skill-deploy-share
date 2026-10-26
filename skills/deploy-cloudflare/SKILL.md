@@ -57,6 +57,8 @@ Cloudflare → Workers & Pages → Create → **Connect GitHub** (owner authoriz
 
 Worker → Settings → **Variables and Secrets** → Add variable. Agent types the plain ones (`NEXT_PUBLIC_SITE_URL` = the workers.dev or custom URL, `NEXT_PUBLIC_SITE_NAME`, `EMAIL_FROM`); the owner pastes the secrets. Each save redeploys.
 
+**Also a build variable:** Worker → Settings → **Builds → Variables and secrets** → owner adds `DATABASE_URL` (Secret). The build runs `scripts/db-migrate.mjs` before deploying; without the variable it *skips*, so new tables are never created once Cloudflare is the only host (found 2026-10-25: a project that had moved off Vercel kept building fine but stopped migrating). Runtime variables are not visible to the build.
+
 Google sign-in: add `https://<new-domain>/api/auth/callback/google` to the OAuth client's redirect URIs and set `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`.
 
 ### 4. Hyperdrive (strongly recommended, free)
@@ -82,7 +84,7 @@ This adds the binding (with a placeholder `localConnectionString`, which `openne
 
 ### 6. Go live (when ready to charge)
 
-Add the custom domain under Worker → Domains (the domain's DNS must be on Cloudflare), update `NEXT_PUBLIC_SITE_URL` and the Google redirect URI, then disconnect the project from Vercel so production runs only on Cloudflare. Ask before each of these.
+Add the custom domain under Worker → Domains (the domain's DNS must be on Cloudflare: see `../launch-kit/references/cloudflare-domain.md` for moving it, including the Resend DKIM record Cloudflare's scan misses, and deleting the old `CNAME` that blocks "Add domain"), update `NEXT_PUBLIC_SITE_URL`, Creem's webhook URL, the catch-up workflow's `SITE_URL` and the Google redirect URI, add the `DATABASE_URL` build variable (step 3), then disconnect the project from Vercel so production runs only on Cloudflare. Ask before each of these.
 
 ## Troubleshooting
 

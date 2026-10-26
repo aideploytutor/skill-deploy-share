@@ -8,7 +8,7 @@
  *
  * Adds src/lib/email.ts (sendEmail) and the /email-test page, documents the variables
  * in .env.example, records the install in stack.json, and commits.
- * It never touches secrets: RESEND_API_KEY is typed into Vercel by the owner.
+ * It never touches secrets: RESEND_API_KEY is pasted into the host's settings by the owner.
  */
 import crypto from "node:crypto";
 import fs from "node:fs";
@@ -85,7 +85,7 @@ try {
   if (!/RESEND_API_KEY/.test(env)) {
     const d = opts.sendingDomain || (stack.domain ? `mail.${stack.domain.split(".").slice(-2).join(".")}` : "mail.example.com");
     write(dir, ".env.example", env.trimEnd() +
-      "\n\n# email-send (episode 005) — set these in Vercel → Settings → Environment Variables.\n" +
+      "\n\n# email-send (episode 005) — set these in the host's settings (Cloudflare → Worker → Settings → Variables and Secrets).\n" +
       "# RESEND_API_KEY=re_...               (secret: Resend → API Keys, \"Sending access\" only)\n" +
       `# EMAIL_FROM=${stack.name || "My Site"} <hello@${d}>\n` +
       "# EMAIL_TEST_TO=you@example.com       (where /email-test sends — your own inbox)\n" +
@@ -111,7 +111,7 @@ try {
   result.next = [
     "Owner: resend.com → sign up → Domains → Add domain (a subdomain like mail.example.com)",
     "Owner OK, then add the DNS records Resend shows; verify with scripts/check.mjs",
-    "Owner: Resend → API Keys → Create (Sending access) → paste into Vercel as RESEND_API_KEY; also set EMAIL_FROM and EMAIL_TEST_TO",
+    "Owner: Resend → API Keys → Create (Sending access) → paste into the host as RESEND_API_KEY (Secret); also set EMAIL_FROM and EMAIL_TEST_TO",
     "Redeploy, open /email-test, send a test email",
   ];
   log(opts.check ? "Would change:" : "Changed:", result.changed.length ? result.changed.join(", ") : "nothing");
