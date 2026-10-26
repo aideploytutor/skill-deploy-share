@@ -200,8 +200,10 @@ Site: **${site}** · Worker: **${worker}** · Email from: **${sending}** · Repo
   - Project name: \`${worker}\`
   - Build command: \`npx opennextjs-cloudflare build\`
   - Deploy command: \`npx opennextjs-cloudflare deploy\`
-- [ ] Settings → **Builds → Variables and secrets** → \`DATABASE_URL\` (Secret). The build creates/updates the tables with it.
-- [ ] Settings → **Variables and Secrets** (runtime):
+- [ ] Settings → **Builds → Variables and secrets** → \`DATABASE_URL\` (Secret) → **Save**. The build creates/updates the tables with it.
+  The first build ran before this existed, so after saving: Deployments → latest build → **Retry build** (or push any commit).
+- [ ] Settings → **Variables and Secrets** (runtime). Add them one by one and pick **Secret** for keys:
+  pasting a whole .env drops values with spaces (\`EMAIL_FROM\`, \`NEXT_PUBLIC_SITE_NAME\`) and stores everything as plain text.
 
 | Name | Type | Value / where from |
 |---|---|---|

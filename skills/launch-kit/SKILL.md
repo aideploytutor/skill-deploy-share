@@ -63,7 +63,8 @@ Tell the owner in plain words what works, the address, and the one next step (us
 
 | What you see | Fix |
 |---|---|
-| Build OK but pages 500 / "relation does not exist" | Build variable `DATABASE_URL` missing → Worker → Settings → Builds → Variables and secrets → add → Retry build |
+| Build OK but pages 500 / "relation does not exist" / doctor: catch-up 500 | Build variable `DATABASE_URL` missing (or added after the last build) → Worker → Settings → Builds → Variables and secrets → add → Save → Retry build |
+| `EMAIL_FROM` or `NEXT_PUBLIC_SITE_NAME` missing after pasting a .env | Cloudflare's bulk paste drops values with spaces: add those two by hand |
 | "Hostname already has externally managed DNS records" | DNS → Records → delete the old record for that hostname (owner), add the domain again |
 | Login codes don't arrive after moving DNS | `node <email-send>/scripts/check.mjs --domain mail.<root>`; usually the DKIM TXT wasn't imported |
 | `npm install` fails in build | Fix network/Node version, run `launch.mjs build` again (it resumes) |
