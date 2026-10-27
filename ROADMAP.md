@@ -26,12 +26,30 @@
 | 012 | ✅ [pay-webhook](skills/pay-webhook/) | Handle successful payments automatically, never miss one | pay-checkout |
 | 013 | ✅ [pay-subscription](skills/pay-subscription/) | Monthly subscriptions | pay-webhook |
 | 014 | ✅ [launch-kit](skills/launch-kit/) | From zero to taking money in one sentence: everything above, on Cloudflare, with a checklist and a live check | — |
-| 015 | `pay-cn-guide` | Taking payments from customers in China | — |
-| 016 | `pay-coupons` | Promo codes and free trials | pay-checkout |
-| 017 | `pay-receipts` | Send a receipt after every payment | pay-webhook, email-send |
-| 018 | `pay-refunds` | One-click refunds | pay-webhook |
-| 019 | `pricing-page` | A pricing page people want to buy from | pay-checkout |
-| 020 | `revenue-report` | A daily look at your revenue | pay-webhook, email-send |
+
+Payment ideas that were planned for 015–020 (China payments, coupons, receipts, refunds, pricing page, revenue report) move after the warehouse series.
+
+## Case study: a website and client portal for a US warehouse (episodes 015–029)
+
+One demo site, [warehouse.labpencil.com](https://warehouse.labpencil.com), gets one feature per episode. Made-up brand, example prices.
+
+| # | Skill | What it does | Requires |
+|---|---|---|---|
+| 015 | ✅ [warehouse-site](skills/warehouse-site/) | Homepage, live quote calculator, inquiries by email + owner list | app-foundation, db-connect, email-send, auth-login |
+| 016 | `warehouse-seo` | Found on Google: search listing, business profile, share cards, where inquiries come from | warehouse-site |
+| 017 | `warehouse-accounts` | Sellers apply online, the owner approves, each seller sees only their own data | warehouse-site |
+| 018 | `warehouse-inbound` | Inbound notices (ASN), carton labels, receiving | warehouse-accounts |
+| 019 | `warehouse-orders` | Sellers create dropship orders online | warehouse-accounts |
+| 020 | `warehouse-import` | Bulk-import orders from a spreadsheet | warehouse-orders |
+| 021 | `warehouse-inventory` | Live inventory, low-stock alerts | warehouse-inbound |
+| 022 | `warehouse-tracking` | Tracking numbers emailed to sellers | warehouse-orders |
+| 023 | `warehouse-fees` | Every fee recorded automatically from the rate card | warehouse-orders |
+| 024 | `warehouse-invoices` | Monthly invoices with line items | warehouse-fees |
+| 025 | `pay-stripe-invoice` | Sellers pay invoices online (Stripe card / ACH) | warehouse-invoices |
+| 026 | `warehouse-dunning` | Overdue reminders, pause shipping past a limit | pay-stripe-invoice |
+| 027 | `warehouse-channels` | Shopify / TikTok Shop orders flow in | warehouse-orders |
+| 028 | `warehouse-dashboard` | Owner dashboard on the phone | warehouse-fees |
+| 029 | — | What a warehouse system costs to build | — |
 
 ## Systems: selling
 
