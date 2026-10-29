@@ -5,7 +5,7 @@ import { QuoteForm } from "./quote-form";
 
 export const metadata: Metadata = { title: "Quote · 报价" };
 
-/** warehouse-site (episode 015): sellers estimate their monthly cost themselves, any time of day. */
+/** warehouse-site (episode 022): sellers estimate their monthly cost themselves, any time of day. */
 export default async function QuotePage({ searchParams }: { searchParams: Promise<{ lang?: string }> }) {
   const lang = langFrom((await searchParams).lang);
   return (

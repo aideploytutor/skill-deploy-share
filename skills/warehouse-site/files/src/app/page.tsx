@@ -3,7 +3,7 @@ import { langFrom, money, pick, t, warehouse } from "@/modules/warehouse/config"
 import { estimate } from "@/modules/warehouse/quote";
 import { C, Icon, SiteShell, withLang } from "@/modules/warehouse/ui";
 
-/** warehouse-site (episode 015): the warehouse's front page. Edit src/modules/warehouse/config.ts, not this file. */
+/** warehouse-site (episode 022): the warehouse's front page. Edit src/modules/warehouse/config.ts, not this file. */
 export default async function Home({ searchParams }: { searchParams: Promise<{ lang?: string }> }) {
   const lang = langFrom((await searchParams).lang);
   const r = warehouse.rates;

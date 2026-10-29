@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import { type Lang, money, pick, t } from "@/modules/warehouse/config";
 import { estimate, type QuoteInput } from "@/modules/warehouse/quote";
 
-/** warehouse-site (episode 015): live quote calculator. The same math runs again on the server when the seller sends it. */
+/** warehouse-site (episode 022): live quote calculator. The same math runs again on the server when the seller sends it. */
 const START: QuoteInput = { lengthIn: 10, widthIn: 8, heightIn: 4, weightLb: 2, ordersPerMonth: 1000, itemsPerOrder: 1, unitsStored: 2000, unitsInbound: 1000 };
 
 const box = "flex flex-col gap-5 rounded-2xl border border-[#E2E8F0] bg-white p-6 sm:p-7";

@@ -1,5 +1,5 @@
 /**
- * warehouse-site (episode 015): everything about YOUR warehouse lives in this file.
+ * warehouse-site (episode 022): everything about YOUR warehouse lives in this file.
  * Change the words, numbers, services and prices here; every page reads from it.
  * The numbers and prices below are EXAMPLES: replace them with your own before going live.
  */

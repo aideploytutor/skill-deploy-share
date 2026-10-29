@@ -6,7 +6,7 @@ import { emitEvent } from "@/lib/events";
 import { type Lang, money, warehouse } from "./config";
 import type { Quote } from "./quote";
 
-/** warehouse-site (episode 015): store inquiries, email the owner and the seller, list them for the owner. */
+/** warehouse-site (episode 022): store inquiries, email the owner and the seller, list them for the owner. */
 
 export const STATUSES = ["new", "contacted", "won", "lost"] as const;
 export type InquiryStatus = (typeof STATUSES)[number];

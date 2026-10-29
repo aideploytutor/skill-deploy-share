@@ -22,7 +22,7 @@ async function mark(form: FormData) {
 
 const fmt = (d: Date) => d.toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short", timeZone: "America/Los_Angeles" });
 
-/** warehouse-site (episode 015): every inquiry in one place, newest first. Only WAREHOUSE_ADMIN_EMAILS can open it. */
+/** warehouse-site (episode 022): every inquiry in one place, newest first. Only WAREHOUSE_ADMIN_EMAILS can open it. */
 export default async function InquiriesPage() {
   const user = await getCurrentUser(await headers());
   if (!user) redirect("/login?next=/admin/inquiries");

@@ -1,6 +1,6 @@
 import { warehouse } from "./config";
 
-/** warehouse-site (episode 015): the quote math. Pure, so the browser and the server agree. */
+/** warehouse-site (episode 022): the quote math. Pure, so the browser and the server agree. */
 export type QuoteInput = {
   lengthIn: number;
   widthIn: number;

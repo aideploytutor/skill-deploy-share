@@ -1,7 +1,7 @@
 import { index, jsonb, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
 /**
- * warehouse-site (episode 015): every inquiry a seller sends from /contact or /quote.
+ * warehouse-site (episode 022): every inquiry a seller sends from /contact or /quote.
  * The owner works through them at /admin/inquiries (new → contacted → won / lost).
  */
 export const warehouseInquiries = pgTable(

@@ -98,7 +98,7 @@ try {
   const envEx = path.join(dir, ".env.example");
   const env = fs.existsSync(envEx) ? fs.readFileSync(envEx, "utf8") : "";
   if (!/WAREHOUSE_ADMIN_EMAILS/.test(env)) {
-    write(dir, ".env.example", env.trimEnd() + "\n\n# warehouse-site (episode 015)\n# WAREHOUSE_ADMIN_EMAILS=you@example.com        (who can open /admin/inquiries; comma-separated; not a secret)\n# WAREHOUSE_INBOX_EMAIL=sales@example.com       (where new inquiries are emailed; defaults to the first admin)\n");
+    write(dir, ".env.example", env.trimEnd() + "\n\n# warehouse-site (episode 022)\n# WAREHOUSE_ADMIN_EMAILS=you@example.com        (who can open /admin/inquiries; comma-separated; not a secret)\n# WAREHOUSE_INBOX_EMAIL=sales@example.com       (where new inquiries are emailed; defaults to the first admin)\n");
   }
 
   // 5. Record the install

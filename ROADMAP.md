@@ -29,27 +29,41 @@
 
 Payment ideas that were planned for 015–020 (China payments, coupons, receipts, refunds, pricing page, revenue report) move after the warehouse series.
 
-## Case study: a website and client portal for a US warehouse (episodes 015–029)
+## After launch: see who uses it and what breaks (episodes 015–021)
+
+All on the demo site [shop.labpencil.com](https://shop.labpencil.com). Free tiers only, nothing that needs a credit card.
+
+| # | Skill | What it does | Requires |
+|---|---|---|---|
+| 015 | ✅ [ops-dashboard](skills/ops-dashboard/) | One owner-only page: new users, revenue, payments, emails, health checks, from your own database | db-connect, auth-login |
+| 016 | `uptime-alert` | Know the site is down before your users do (UptimeRobot free, 5-minute checks) | — |
+| 017 | `error-alert` | Errors collected and emailed to you, before anyone complains | app-foundation |
+| 018 | `analytics-kit` | Who visits and from where (PostHog free, privacy-friendly) | app-foundation |
+| 019 | `funnel-kit` | Where visitors drop off between landing and paying | analytics-kit |
+| 020 | `session-replay` | Watch what confused users actually did | analytics-kit |
+| 021 | `daily-report` | One email every morning with yesterday's numbers | ops-dashboard, email-send |
+
+## Case study: a website and client portal for a US warehouse (episodes 022–036)
 
 One demo site, [warehouse.labpencil.com](https://warehouse.labpencil.com), gets one feature per episode. Made-up brand, example prices.
 
 | # | Skill | What it does | Requires |
 |---|---|---|---|
-| 015 | ✅ [warehouse-site](skills/warehouse-site/) | Homepage, live quote calculator, inquiries by email + owner list | app-foundation, db-connect, email-send, auth-login |
-| 016 | `warehouse-seo` | Found on Google: search listing, business profile, share cards, where inquiries come from | warehouse-site |
-| 017 | `warehouse-accounts` | Sellers apply online, the owner approves, each seller sees only their own data | warehouse-site |
-| 018 | `warehouse-inbound` | Inbound notices (ASN), carton labels, receiving | warehouse-accounts |
-| 019 | `warehouse-orders` | Sellers create dropship orders online | warehouse-accounts |
-| 020 | `warehouse-import` | Bulk-import orders from a spreadsheet | warehouse-orders |
-| 021 | `warehouse-inventory` | Live inventory, low-stock alerts | warehouse-inbound |
-| 022 | `warehouse-tracking` | Tracking numbers emailed to sellers | warehouse-orders |
-| 023 | `warehouse-fees` | Every fee recorded automatically from the rate card | warehouse-orders |
-| 024 | `warehouse-invoices` | Monthly invoices with line items | warehouse-fees |
-| 025 | `pay-stripe-invoice` | Sellers pay invoices online (Stripe card / ACH) | warehouse-invoices |
-| 026 | `warehouse-dunning` | Overdue reminders, pause shipping past a limit | pay-stripe-invoice |
-| 027 | `warehouse-channels` | Shopify / TikTok Shop orders flow in | warehouse-orders |
-| 028 | `warehouse-dashboard` | Owner dashboard on the phone | warehouse-fees |
-| 029 | — | What a warehouse system costs to build | — |
+| 022 | ✅ [warehouse-site](skills/warehouse-site/) | Homepage, live quote calculator, inquiries by email + owner list | app-foundation, db-connect, email-send, auth-login |
+| 023 | `warehouse-seo` | Found on Google: search listing, business profile, share cards, where inquiries come from | warehouse-site |
+| 024 | `warehouse-accounts` | Sellers apply online, the owner approves, each seller sees only their own data | warehouse-site |
+| 025 | `warehouse-inbound` | Inbound notices (ASN), carton labels, receiving | warehouse-accounts |
+| 026 | `warehouse-orders` | Sellers create dropship orders online | warehouse-accounts |
+| 027 | `warehouse-import` | Bulk-import orders from a spreadsheet | warehouse-orders |
+| 028 | `warehouse-inventory` | Live inventory, low-stock alerts | warehouse-inbound |
+| 029 | `warehouse-tracking` | Tracking numbers emailed to sellers | warehouse-orders |
+| 030 | `warehouse-fees` | Every fee recorded automatically from the rate card | warehouse-orders |
+| 031 | `warehouse-invoices` | Monthly invoices with line items | warehouse-fees |
+| 032 | `pay-stripe-invoice` | Sellers pay invoices online (Stripe card / ACH) | warehouse-invoices |
+| 033 | `warehouse-dunning` | Overdue reminders, pause shipping past a limit | pay-stripe-invoice |
+| 034 | `warehouse-channels` | Shopify / TikTok Shop orders flow in | warehouse-orders |
+| 035 | `warehouse-dashboard` | Owner dashboard on the phone | warehouse-fees |
+| 036 | — | What a warehouse system costs to build | — |
 
 ## Systems: selling
 
@@ -140,8 +154,6 @@ One demo site, [warehouse.labpencil.com](https://warehouse.labpencil.com), gets 
 
 | # | Skill | What it does | Requires |
 |---|---|---|---|
-| 081 | `uptime-alert` | Know the moment your site goes down | — |
-| 082 | `error-tracking` | See errors as soon as users hit them | app-foundation |
 | 083 | `security-check` | A security check-up before launch | — |
 | 084 | `rate-limit` | Stop abuse: limit request rates | app-foundation |
 | 085 | `cost-guard` | A spending cap for every service | — |
@@ -149,7 +161,6 @@ One demo site, [warehouse.labpencil.com](https://warehouse.labpencil.com), gets 
 | 087 | `seo-kit` | Get found on Google | app-foundation |
 | 088 | `share-cards` | Link previews with an image and title | app-foundation |
 | 089 | `i18n-kit` | Multiple languages, sell worldwide | app-foundation |
-| 090 | `analytics-kit` | Free, privacy-friendly analytics | app-foundation |
 
 ## Growth: won't go stale, can scale
 

@@ -4,7 +4,7 @@ description: Give a US warehouse (3PL / 海外仓 / fulfillment center) its own 
 license: MIT
 metadata:
   version: "1.0.0"
-  episode: "015"
+  episode: "022"
   requires: "app-foundation, db-connect, email-send, auth-login (launch-kit installs all of them)"
   provides: "warehouse_inquiries table; src/modules/warehouse/{config,quote,inquiries,ui}; / (warehouse homepage), /quote, /contact, /admin/inquiries; warehouse.inquiry_received and warehouse.inquiry_status_changed events"
 ---

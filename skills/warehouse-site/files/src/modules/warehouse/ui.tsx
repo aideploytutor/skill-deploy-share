@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { type IconName, type Lang, pick, t, warehouse } from "./config";
 
 /**
- * warehouse-site (episode 015): header, footer, icons and colors shared by the public pages.
+ * warehouse-site (episode 022): header, footer, icons and colors shared by the public pages.
  * Colors: navy for trust, one orange for actions. Change them here.
  */
 export const C = {
