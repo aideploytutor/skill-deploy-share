@@ -79,7 +79,7 @@ function Bars({ days, pick, label, fmt }: { days: Day[]; pick: (d: Day) => numbe
   const H = 56, step = 12, w = 9;
   const W = days.length * step;
   return (
-    <svg viewBox={`0 0 ${W} ${H + 2}`} className="h-16 w-full" preserveAspectRatio="none" role="img" aria-label={label}>
+    <svg viewBox={`0 0 ${W} ${H + 2}`} className="h-12 w-full sm:h-16" preserveAspectRatio="none" role="img" aria-label={label}>
       <line x1="0" x2={W} y1={H + 1} y2={H + 1} className="stroke-line" strokeWidth="1" />
       {vals.map((v, i) => {
         const h = v ? Math.max(3, (v / max) * H) : 0;
@@ -104,11 +104,11 @@ function Bars({ days, pick, label, fmt }: { days: Day[]; pick: (d: Day) => numbe
 
 function Tile({ label, value, sub, children }: { label: string; value: string; sub: string; children: ReactNode }) {
   return (
-    <section className="flex min-w-0 flex-col gap-1 rounded-2xl border border-line bg-white p-5 dark:bg-white/5">
-      <h2 className="text-sm font-bold text-muted">{label}</h2>
-      <p className="text-[34px] font-black leading-tight tabular-nums">{value}</p>
-      <p className="text-sm text-muted">{sub}</p>
-      <div className="mt-3">{children}</div>
+    <section className="flex min-w-0 flex-col gap-1 rounded-2xl border border-line bg-white p-4 sm:p-5 dark:bg-white/5">
+      <h2 className="text-[13px] font-bold text-muted sm:text-sm">{label}</h2>
+      <p className="text-[26px] font-black leading-tight tabular-nums sm:text-[34px]">{value}</p>
+      <p className="text-xs text-muted sm:text-sm">{sub}</p>
+      <div className="mt-auto pt-3">{children}</div>
     </section>
   );
 }
@@ -209,7 +209,7 @@ export default async function OpsPage({ searchParams }: { searchParams: Promise<
         <span className="rounded-full border border-line px-3 py-1.5 text-[13px] text-muted">{t.period(o.days.length, tz)}</span>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
         <Tile label={t.users} value={num(lastDays(o.days, "signups"))} sub={t.usersSub(o.users, o.users24h)}>
           <Bars days={o.days} pick={(d) => d.signups} label={t.users} fmt={num} />
         </Tile>
