@@ -3,7 +3,7 @@ name: ops-dashboard
 description: Add an owner-only ops dashboard (/ops) to a launched site — new users, revenue, payments and emails for the last 14 days with daily bars, plus health checks (database, nightly backup, payment webhooks, email delivery) and a live event feed — read straight from the site's own Postgres, with no tracking script and no outside account. Use when the user says "I launched, now what", "how many people signed up", "show me my numbers", "ops dashboard", "运营看板", "后台数据", "监控网站", or a later monitoring skill requires ops-dashboard.
 license: MIT
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
   episode: "015"
   requires: "app-foundation, db-connect, auth-login (pay-checkout, pay-webhook, pay-subscription, email-send, file-upload, db-backup are read when present)"
   provides: "src/modules/ops/{metrics,access}.ts; /ops page; OPS_ADMIN_EMAILS, OPS_TIMEZONE, OPS_DASHBOARD_PUBLIC variables"

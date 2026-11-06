@@ -36,7 +36,7 @@ All on the demo site [shop.labpencil.com](https://shop.labpencil.com). Free tier
 | # | Skill | What it does | Requires |
 |---|---|---|---|
 | 015 | ✅ [ops-dashboard](skills/ops-dashboard/) | One owner-only page: new users, revenue, payments, emails, health checks, from your own database | db-connect, auth-login |
-| 016 | `uptime-alert` | Know the site is down before your users do (UptimeRobot free, 5-minute checks) | — |
+| 016 | ✅ [uptime-alert](skills/uptime-alert/) | Know the site is down before your users do: UptimeRobot free keyword monitor, phone push, status page, alert test | app-foundation |
 | 017 | `error-alert` | Errors collected and emailed to you, before anyone complains | app-foundation |
 | 018 | `analytics-kit` | Who visits and from where (PostHog free, privacy-friendly) | app-foundation |
 | 019 | `funnel-kit` | Where visitors drop off between landing and paying | analytics-kit |

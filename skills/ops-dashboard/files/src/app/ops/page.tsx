@@ -5,6 +5,7 @@ import { cookies, headers } from "next/headers";
 import { isDbConfigured } from "@/db";
 import { opsAccess } from "@/modules/ops/access";
 import { type Day, lastDays, loadOps } from "@/modules/ops/metrics";
+import { getUptime, isUptimeConfigured, type Uptime } from "@/modules/uptime/uptimerobot";
 
 export const metadata: Metadata = { title: "Ops dashboard", robots: { index: false } };
 export const dynamic = "force-dynamic";
@@ -22,6 +23,9 @@ const T = {
     db: "Database", dbOk: (ms: number) => `Answering in ${ms} ms`,
     backup: "Nightly backup", backupAgo: (a: string) => `Last one ${a}`, backupOld: (a: string) => `Last one ${a}: check the GitHub Action`, backupNone: "Not set up (db-backup)",
     hooks: "Payment notifications", hooksOk: (n: number) => `${n} received in 7 days, none failed`, hooksBad: (f: number, n: number) => `${f} of ${n} failed: open Creem → Webhooks → Resend`, hooksNone: "None in 7 days",
+    up: "Online check", upNone: "Not set up (uptime-alert)", upErr: "Couldn't read UptimeRobot",
+    upOk: (r: string, d: string) => `Up · 30 days ${r} · ${d}`, upDown: "DOWN right now: UptimeRobot has emailed you", upPaused: "Monitor is paused", upPending: "Waiting for the first check",
+    lastDown: (a: string, m: number) => `last down ${a} for ${m} min`, neverDown: "no downtime yet",
     mail: "Email delivery", mailOk: "No failures in 7 days", mailBad: (f: number) => `${f} failed in 7 days`,
     activity: "What happened · 7 days", latest: "Latest events", none: "Nothing yet.",
     ok: "OK", warn: "Check", idle: "Off",
@@ -42,6 +46,9 @@ const T = {
     db: "数据库", dbOk: (ms: number) => `${ms} 毫秒响应`,
     backup: "每晚备份", backupAgo: (a: string) => `上次 ${a}`, backupOld: (a: string) => `上次 ${a}，去看看 GitHub Action`, backupNone: "还没设置（db-backup）",
     hooks: "付款通知", hooksOk: (n: number) => `7 天收到 ${n} 条，全部成功`, hooksBad: (f: number, n: number) => `${n} 条里 ${f} 条失败：去 Creem → Webhooks 点 Resend`, hooksNone: "7 天内没有",
+    up: "在线监控", upNone: "还没设置（uptime-alert）", upErr: "读不到 UptimeRobot",
+    upOk: (r: string, d: string) => `在线 · 30 天 ${r} · ${d}`, upDown: "现在打不开！UptimeRobot 已经发提醒了", upPaused: "监控暂停中", upPending: "等第一次检查",
+    lastDown: (a: string, m: number) => `上次挂 ${a}，${m} 分钟`, neverDown: "还没挂过",
     mail: "邮件送达", mailOk: "7 天内没有失败", mailBad: (f: number) => `7 天内 ${f} 封失败`,
     activity: "7 天里发生了什么", latest: "最新事件", none: "还没有。",
     ok: "正常", warn: "要看", idle: "未开",
@@ -182,8 +189,32 @@ export default async function OpsPage({ searchParams }: { searchParams: Promise<
   const money = (v: number) => formatMoney(v, o.currency ?? "USD");
   const num = (v: number) => String(v);
 
+  let up: Uptime | null = null;
+  let upErr = false;
+  if (isUptimeConfigured()) {
+    try {
+      up = await getUptime();
+    } catch (e) {
+      upErr = true;
+      console.error("[ops] uptime:", e instanceof Error ? e.message : e);
+    }
+  }
+  const pct = (v: number | null) => (v == null ? "—" : `${v >= 99.995 ? "100" : v.toFixed(2)}%`);
+  const uptimeRow: { name: string; tone: Tone; text: string } = !isUptimeConfigured()
+    ? { name: t.up, tone: "idle", text: t.upNone }
+    : upErr || !up
+      ? { name: t.up, tone: "warn", text: t.upErr }
+      : up.status === "down"
+        ? { name: t.up, tone: "warn", text: t.upDown }
+        : up.status === "paused"
+          ? { name: t.up, tone: "idle", text: t.upPaused }
+          : up.status === "pending"
+            ? { name: t.up, tone: "idle", text: t.upPending }
+            : { name: t.up, tone: "ok", text: t.upOk(pct(up.ratio.d30), up.lastDown ? t.lastDown(ago(up.lastDown.at, lang), up.lastDown.minutes) : t.neverDown) };
+
   const backupHours = o.lastBackup ? (Date.now() - o.lastBackup.getTime()) / 3.6e6 : null;
   const health: { name: string; tone: Tone; text: string }[] = [
+    uptimeRow,
     { name: t.db, tone: "ok", text: t.dbOk(o.dbMs) },
     backupHours === null
       ? { name: t.backup, tone: "idle", text: t.backupNone }

@@ -31,6 +31,7 @@ When a user request matches a skill's `description`:
 | [pay-subscription](skills/pay-subscription/SKILL.md) | The user wants to charge monthly/yearly, recurring payments or a membership fee, or a later skill requires `pay-subscription`. Example phrasings: "charge monthly", "add subscriptions", "membership fee". |
 | [launch-kit](skills/launch-kit/SKILL.md) | The user wants to start from scratch and end up with a live site that takes payments, or asks what is still missing before launch. Example phrasings: "build me a site that takes payments", "launch my product from scratch", "what is left before I can launch?". |
 | [ops-dashboard](skills/ops-dashboard/SKILL.md) | The user has launched and wants to see their numbers (sign-ups, revenue, emails) or whether anything is broken, in one owner-only page. Example phrasings: "show me my numbers", "ops dashboard", "运营看板", "how many people signed up". |
+| [uptime-alert](skills/uptime-alert/SKILL.md) | The user wants to know when the site goes down, an uptime monitor, phone alerts or a status page. Example phrasings: "tell me when my site goes down", "uptime monitor", "网站挂了提醒我", "status page". |
 | [warehouse-site](skills/warehouse-site/SKILL.md) | The user wants a website for a US warehouse / 3PL / 海外仓 that brings in sellers: quote calculator, inquiries, owner list. Example phrasings: "website for my warehouse", "3PL website", "海外仓官网". |
 
 ## Shared conventions

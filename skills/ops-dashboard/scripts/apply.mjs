@@ -16,10 +16,10 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
-const VERSION = "1.0.0";
+const VERSION = "1.1.0";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const FILES = path.join(here, "..", "files");
-const NEW_FILES = ["src/modules/ops/metrics.ts", "src/modules/ops/access.ts", "src/app/ops/page.tsx"];
+const NEW_FILES = ["src/modules/ops/metrics.ts", "src/modules/ops/access.ts", "src/app/ops/page.tsx", "src/modules/uptime/uptimerobot.ts"];
 
 const opts = { json: false, check: false, git: true };
 const argv = process.argv.slice(2);
