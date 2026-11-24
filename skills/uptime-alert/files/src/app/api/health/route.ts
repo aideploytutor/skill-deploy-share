@@ -22,11 +22,17 @@ async function checkDatabase() {
 
 /**
  * Used by uptime monitors (uptime-alert, episode 016) and by skills to check the app is up.
- * Monitors look for the keyword "status":"up". HEALTH_FORCE_DOWN=true answers "down" on purpose,
- * so the owner can test that the alert really reaches their phone (remove it afterwards).
+ * Monitors look for the keyword "status":"up".
+ *
+ * The database is NOT touched by default: a monitor calling every 5 minutes would keep a
+ * scale-to-zero database (Neon free: suspends after 5 idle minutes) awake 24/7 and burn its
+ * monthly compute quota. Add ?db=1 for a deep check (the hourly payment catch-up and backups
+ * already alert you by email when the database is down).
+ * HEALTH_FORCE_DOWN=true answers "down" on purpose, to test the alert (remove it afterwards).
  */
-export async function GET() {
-  const database = await checkDatabase();
+export async function GET(req: Request) {
+  const deep = new URL(req.url).searchParams.get("db") === "1";
+  const database = deep ? await checkDatabase() : { status: "not checked (add ?db=1)" as const };
   const drill = process.env.HEALTH_FORCE_DOWN === "true";
   const up = database.status !== "error" && !drill;
   return NextResponse.json(
@@ -44,7 +50,7 @@ export async function GET() {
 }
 
 /** Some monitors send HEAD: same answer, no body. */
-export async function HEAD() {
-  const res = await GET();
+export async function HEAD(req: Request) {
+  const res = await GET(req);
   return new Response(null, { status: res.status, headers: res.headers });
 }

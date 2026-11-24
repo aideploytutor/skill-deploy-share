@@ -3,7 +3,7 @@ name: ops-dashboard
 description: Add an owner-only ops dashboard (/ops) to a launched site — new users, revenue, payments and emails for the last 14 days with daily bars, plus health checks (database, nightly backup, payment webhooks, email delivery) and a live event feed — read straight from the site's own Postgres, with no tracking script and no outside account. Use when the user says "I launched, now what", "how many people signed up", "show me my numbers", "ops dashboard", "运营看板", "后台数据", "监控网站", or a later monitoring skill requires ops-dashboard.
 license: MIT
 metadata:
-  version: "1.1.0"
+  version: "1.2.0"
   episode: "015"
   requires: "app-foundation, db-connect, auth-login (pay-checkout, pay-webhook, pay-subscription, email-send, file-upload, db-backup are read when present)"
   provides: "src/modules/ops/{metrics,access}.ts; /ops page; OPS_ADMIN_EMAILS, OPS_TIMEZONE, OPS_DASHBOARD_PUBLIC variables"
@@ -27,6 +27,15 @@ Why no PostHog/GA here: everything that matters at this stage is already in the 
 | What happened · 7 days, Latest events | `core_events` type, source and time only |
 
 Each tile has 14 daily bars (today in the accent colour; hover/tap a bar for its date and value). Tables that aren't installed count as 0, so it works on a bare foundation too.
+
+## Free-database quota (learned the hard way, Nov 2026)
+
+Neon's free plan gives 100 CU-hours per project per month and suspends the database until next month when they run out. The compute only sleeps after 5 minutes without queries, so **anything that queries the database every ≤5 minutes keeps it awake 24/7** (~180 CU-hours/month) — our own uptime monitor did exactly that. Therefore:
+
+- `/ops` shows **Database quota** (Neon API, never wakes the database) when `NEON_API_KEY` + `NEON_PROJECT_ID` are set; orange at 80%.
+- `.github/workflows/neon-quota.yml` checks daily and fails (GitHub emails the owner) at 80%. Needs the same two values as GitHub repository secrets.
+- `.github/workflows/db-cleanup.yml` deletes, weekly after the backup: catch-up log lines > 30 days, `/db-test` rows, expired sign-in codes, sessions expired > 7 days, rate-limit counters > 7 days. Nothing else. Uses the backup's `DATABASE_URL` secret.
+- In Neon → Compute, cap autoscaling at 0.25 CU so a busy minute can't burn the quota 8× faster.
 
 ## Rules
 

@@ -16,10 +16,10 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
-const VERSION = "1.1.0";
+const VERSION = "1.2.0";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const FILES = path.join(here, "..", "files");
-const NEW_FILES = ["src/modules/ops/metrics.ts", "src/modules/ops/access.ts", "src/app/ops/page.tsx", "src/modules/uptime/uptimerobot.ts"];
+const NEW_FILES = ["src/modules/ops/metrics.ts", "src/modules/ops/access.ts", "src/app/ops/page.tsx", "src/modules/uptime/uptimerobot.ts", "src/modules/ops/neon.ts", ".github/workflows/db-cleanup.yml", ".github/workflows/neon-quota.yml"];
 
 const opts = { json: false, check: false, git: true };
 const argv = process.argv.slice(2);
@@ -91,6 +91,7 @@ export function GET(req: NextRequest) {
 # OPS_ADMIN_EMAILS=you@example.com        (your sign-in email; several: a@x.com,b@y.com)
 # OPS_TIMEZONE=America/Los_Angeles        (optional; days are counted in this time zone, default UTC)
 # OPS_DASHBOARD_PUBLIC=true               (optional, demos only: anyone can see the numbers)
+# NEON_API_KEY=... / NEON_PROJECT_ID=...  (optional: Neon quota meter; also as GitHub secrets for the daily quota check)
 `);
   }
 

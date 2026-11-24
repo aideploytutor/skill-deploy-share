@@ -20,7 +20,7 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
-const VERSION = "1.0.0";
+const VERSION = "1.1.0";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const FILES = path.join(here, "..", "files");
 const HEALTH = "src/app/api/health/route.ts";
@@ -82,6 +82,7 @@ try {
   const cur = fs.existsSync(hp) ? fs.readFileSync(hp, "utf8") : "";
   if (cur !== want) {
     if (!cur || cur.includes(FOUNDATION_HEALTH_MARK)) write(dir, HEALTH, want);
+    else if (cur.includes("Used by uptime monitors (uptime-alert, episode 016)")) write(dir, HEALTH, want); // 1.0.0 → 1.1.0
     else if (!cur.includes('status: up ? "up" : "down"')) {
       result.skipped.push(`${HEALTH} (yours, kept)`);
       result.manual.push(`Your /api/health was customised. Make it return {"status":"up"} when healthy and 503 when not, with cache-control: no-store. Reference: ${path.join(FILES, HEALTH)}`);

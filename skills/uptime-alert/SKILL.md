@@ -3,7 +3,7 @@ name: uptime-alert
 description: Know the site is down before users do — a free UptimeRobot keyword monitor on /api/health every 5 minutes with email and phone-push alerts, a public status page, an alert test switch (HEALTH_FORCE_DOWN) and 30-day uptime shown on /ops. Use when the user says "tell me when my site goes down", "uptime monitor", "网站挂了提醒我", "在线监控", "status page", or a later skill requires uptime-alert.
 license: MIT
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
   episode: "016"
   requires: "app-foundation (ops-dashboard optional: shows uptime on /ops)"
   provides: "/api/health keyword + HEAD + no-store + HEALTH_FORCE_DOWN; src/modules/uptime/uptimerobot.ts; UPTIMEROBOT_API_KEY, STATUS_PAGE_URL, UPTIME_MONITOR_MATCH variables"
@@ -15,7 +15,9 @@ Goal: if the site stops answering, the owner's phone buzzes within ~5 minutes, a
 
 Why UptimeRobot: free plan has 50 monitors, 5-minute checks, keyword monitors, email alerts, the mobile app's push alerts and one status page; no card needed. The check runs from outside your host, so it notices when Cloudflare, DNS or the database is down — a check inside the site can't.
 
-Why a **keyword** monitor on `/api/health` (not just the homepage): a page can answer 200 with an error message inside. `/api/health` answers `{"status":"up",…}` only when the app *and* the database work, and 503 otherwise. The monitor alerts when `"status":"up"` is missing.
+Why a **keyword** monitor on `/api/health` (not just the homepage): a page can answer 200 with an error message inside. `/api/health` answers `{"status":"up",…}` when the app works; the monitor alerts when `"status":"up"` is missing.
+
+**Never let the 5-minute monitor query the database** (fixed in 1.1.0). A scale-to-zero database (Neon free suspends after 5 idle minutes) pinged every 5 minutes never sleeps, burns ~180 CU-hours a month against a 100 CU-hour quota, and is suspended until next month — this happened to our demo. `/api/health` therefore skips the database; `/api/health?db=1` is the deep check for occasional use. Database outages are still caught: the hourly payment catch-up (pay-webhook) and the nightly backup fail and GitHub emails the owner.
 
 ## Rules
 

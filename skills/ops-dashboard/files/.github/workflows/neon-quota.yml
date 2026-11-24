@@ -1,0 +1,37 @@
+# ops-dashboard: once a day, check how much of Neon's monthly compute quota is used.
+# Free plan: 100 CU-hours per project per month; when it runs out the database stops until next month.
+# This job FAILS at 80% (GitHub emails you), so you can act before the site breaks.
+# Asks Neon's API only, so it never wakes the database.
+# Needs repository secrets NEON_API_KEY and NEON_PROJECT_ID (Settings → Secrets and variables → Actions).
+name: Neon quota
+
+on:
+  schedule:
+    - cron: "5 15 * * *" # every day 15:05 UTC (morning in the US, evening in China)
+  workflow_dispatch: {}
+
+permissions: {}
+
+env:
+  LIMIT: 100 # CU-hours included in your Neon plan
+  WARN_AT: 80 # percent
+
+jobs:
+  quota:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check usage
+        env:
+          NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+          NEON_PROJECT_ID: ${{ secrets.NEON_PROJECT_ID }}
+        run: |
+          set -euo pipefail
+          if [ -z "$NEON_API_KEY" ] || [ -z "$NEON_PROJECT_ID" ]; then echo "::error::Add repository secrets NEON_API_KEY and NEON_PROJECT_ID"; exit 1; fi
+          J=$(curl -sS --fail --max-time 30 -H "Authorization: Bearer $NEON_API_KEY" "https://console.neon.tech/api/v2/projects/$NEON_PROJECT_ID")
+          SEC=$(echo "$J" | jq -r '.project.compute_time_seconds // empty')
+          if [ -z "$SEC" ]; then echo "::error::Neon API did not return compute_time_seconds"; exit 1; fi
+          USED=$(awk "BEGIN{printf \"%.1f\", $SEC/3600}"); PCT=$(awk "BEGIN{printf \"%d\", $SEC/36/$LIMIT}")
+          MSG="Neon compute this month: $USED of $LIMIT CU-hours ($PCT%)"
+          echo "$MSG"; echo "### $MSG" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$PCT" -ge "$WARN_AT" ]; then echo "::error::$MSG. Find what keeps the database awake (monitors, cron jobs) or move to a paid plan before it runs out."; exit 1; fi

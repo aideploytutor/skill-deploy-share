@@ -1,0 +1,52 @@
+# ops-dashboard: once a week, delete data nobody needs any more, so the database stays small.
+# Deletes ONLY: payment catch-up log lines older than 30 days, /db-test rows, expired sign-in codes,
+# sign-in sessions expired over 7 days ago, and sign-in rate-limit counters older than 7 days.
+# Never touches users, payments, subscriptions, files or backup records.
+# Runs after Sunday's backup, so everything deleted is still in that backup. Uses the same
+# DATABASE_URL secret as db-backup.
+name: Database cleanup
+
+on:
+  schedule:
+    - cron: "47 3 * * 0" # Sundays 03:47 UTC, 30 minutes after the nightly backup
+  workflow_dispatch: {}
+
+permissions: {}
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Clean up
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          set -euo pipefail
+          if [ -z "$DATABASE_URL" ]; then echo "::error::Missing secret DATABASE_URL"; exit 1; fi
+          URL="${DATABASE_URL/-pooler./.}"; echo "::add-mask::$URL"; export URL
+          SQL=$(cat <<'SQL'
+          begin;
+          create temp table report(what text, n int);
+          do $$ declare k int; begin
+            if to_regclass('public.core_events') is not null then
+              delete from core_events where type = 'pay.reconciled' and created_at < now() - interval '30 days'; get diagnostics k = row_count; insert into report values ('payment catch-up log lines > 30 days', k);
+              delete from core_events where type = 'db.test'; get diagnostics k = row_count; insert into report values ('/db-test rows', k);
+            end if;
+            if to_regclass('public.auth_verifications') is not null then
+              delete from auth_verifications where expires_at < now() - interval '1 day'; get diagnostics k = row_count; insert into report values ('expired sign-in codes', k);
+            end if;
+            if to_regclass('public.auth_sessions') is not null then
+              delete from auth_sessions where expires_at < now() - interval '7 days'; get diagnostics k = row_count; insert into report values ('sessions expired > 7 days', k);
+            end if;
+            if to_regclass('public.auth_rate_limits') is not null then
+              delete from auth_rate_limits where last_request < (extract(epoch from now() - interval '7 days') * 1000)::bigint; get diagnostics k = row_count; insert into report values ('rate-limit counters > 7 days', k);
+            end if;
+          end $$;
+          select what || ': ' || n from report;
+          commit;
+          SQL
+          )
+          OUT=$(docker run --rm --network host -e URL postgres:17-alpine psql "$URL" -v ON_ERROR_STOP=1 -tA -c "$SQL")
+          echo "$OUT"
+          { echo "### Database cleanup (deleted rows)"; echo ""; echo '```'; echo "$OUT" | grep ':' ; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
